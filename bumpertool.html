@@ -27,6 +27,13 @@
 
 #right {
 	padding-left: 10px;
+	text-align: right;
+}
+
+#labels * {
+	padding: 3px;
+	margin-top: 3px;
+	margin-bottom: 3px;
 }
 </style>
 </head>
@@ -36,15 +43,22 @@
 	<div id="left"><canvas width=4096 height=4096 id="display"></canvas></div>
 	
 	<div id="right">
-		<!-- <span id="labels"> -->
-			<!-- <input type="range" min=50 max=100 step=0.5 id="time"> -->
-			<!-- <br> -->
-			<!-- <button onclick="cacheAll()" id="load-all">Load All Data</button> -->
-			<!-- <br> -->
-			<!-- <button onclick="renderHigh()" id="render-high">Render High-Res Image</button> -->
-			<!-- <br><br> -->
-			<!-- <span id="time-info"></span> -->
-		<!-- </span> -->
+		<span id="labels">
+			Decimal point digits for speed:<br>
+			<input type="number" min=3 max=12 step=1 value=3 id="speeddecimals">
+			<br><br>
+			Decimal point digits for dot product:<br>
+			<input type="number" min=3 max=12 step=1 value=3 id="dotproddecimals">
+			<br><br>
+			Decimal point digits for angle:<br>
+			<input type="number" min=3 max=12 step=1 value=3 id="angledecimals">
+			<br><br>
+			Size of high-quality render:<br>
+			<input type="range" min=1000 max=25000 step=100 value="4500" id="rendersize" onchange="rendersizeout.innerText = this.value"><br>
+			<span id="rendersizeout">4500</span>
+			<br><br>
+			<button onclick="apply()">Change settings</button>
+		</span>
 	</div>
 </div>
 
@@ -61,6 +75,13 @@
 <!-- window.PROPS = { maxTime: (Math.log2(props[0])), maxRTime: props[1], maxFreq: props[2] }; -->
 <!-- window.CACHE = {}; -->
 window.CVS = document.getElementById("display");
+window.rendersize = document.getElementById("rendersize");
+window.rendersizeout = document.getElementById("rendersizeout");
+window.speeddecimals = document.getElementById("speeddecimals");
+window.dotproddecimals = document.getElementById("dotproddecimals");
+window.angledecimals = document.getElementById("angledecimals");
+
+apply();
 
 <!-- let input = document.getElementById("time"); -->
 <!-- input.value = "100"; -->
@@ -75,11 +96,13 @@ window.CVS = document.getElementById("display");
 window.X = undefined;
 window.Y = undefined;
 <!-- const ms = 60; -->
-const ms = 60;
+const fps = 60;
 
 window.DODEBUG = false;
+window.MOVE = true;
 
 CVS.addEventListener("mousemove", (e) => {
+	if (!window.MOVE) return;
 	window.X = Math.round(e.offsetX);
 	window.Y = Math.round(e.offsetY);
 });
@@ -88,8 +111,13 @@ CVS.addEventListener("mousedown", (e) => {
 	e.preventDefault()
 });
 
+CVS.addEventListener("oncontextmenu", (e) => {
+	e.preventDefault()
+});
+
 CVS.addEventListener("mouseup", (e) => {
-	if (e.button == 2) window.DODEBUG = true;
+	if (e.button == 2) window.MOVE = !window.MOVE;
+	<!-- if (e.button == 2) window.DODEBUG = true; -->
 	if (e.button == 0) renderHigh();
 	e.preventDefault();
 });
@@ -98,7 +126,7 @@ CVS.addEventListener("click", (e) => {
 	e.preventDefault();
 });
 
-setInterval(run, 1000/ms);
+setInterval(run, 1000/fps);
 
 <!-- await renderHigh(); -->
 
@@ -108,7 +136,7 @@ async function renderHigh() {
 	<!-- let input = document.getElementById("time"); -->
 	<!-- let num = (Number(input.value)/100).toFixed(3); -->
 	<!-- window.DATA = await load(num); -->
-	let cvs = new OffscreenCanvas(4500, 4500);
+	let cvs = new OffscreenCanvas(PROPS.rendersize, PROPS.rendersize);
 	render(cvs, cvs.width, cvs.height, false);
 	cvs.convertToBlob().then((blob) => {
 		let _url = URL.createObjectURL(blob);
@@ -117,6 +145,42 @@ async function renderHigh() {
 		<!-- img.src = _url; -->
 		<!-- document.getElementById("left").appendChild(img); -->
 	});
+}
+
+function apply() {
+	let defaults = { rendersize: 4500, speeddecimals: 3, dotproddecimals: 3, angledecimals: 3 };
+	let min = { rendersize: 1000, speeddecimals: 3, dotproddecimals: 3, angledecimals: 3 };
+	let max = { rendersize: 25000, speeddecimals: 12, dotproddecimals: 12, angledecimals: 12 };
+	
+	if (window.PROPS == undefined) {
+		if (localStorage.getItem("settings") == null) {
+			window.PROPS = defaults;
+			return;
+		} else {
+			let stored = JSON.parse(localStorage.getItem("settings"));
+			window.PROPS = { rendersize, speeddecimals, dotproddecimals, angledecimals };
+			for (const thing in PROPS) {
+				if (!PROPS.hasOwnProperty(thing)) continue;
+				PROPS[thing].value = stored[thing];
+				PROPS[thing] = stored[thing];
+			}
+		}
+	}
+	
+	window.PROPS = { rendersize, speeddecimals, dotproddecimals, angledecimals };
+	for (const thing in PROPS) {
+		if (!PROPS.hasOwnProperty(thing)) continue;
+		let val = parseInt(PROPS[thing].value);
+		if (!val) val = defaults[thing];
+		if (val < min[thing]) val = min[thing];
+		if (val > max[thing]) val = max[thing];
+		PROPS[thing].value = val;
+		PROPS[thing] = val;
+	}
+	
+	rendersizeout.innerText = PROPS["rendersize"];
+	
+	localStorage.setItem("settings", JSON.stringify(PROPS));
 }
 
 function run() {
@@ -329,8 +393,9 @@ function render(cvs, winW, winH, elem = true) {
 	<!-- const ymul = h / ymax; -->
 	const ymul = xmul;
 	
-	let cX = window.X;
-	let cY = h - window.Y;
+	<!-- if (!elem) debugger; -->
+	let cX = w - mapl(window.X, 0, CVS.width, 0, w);
+	let cY = mapl(window.Y, 0, CVS.height, 0, h);
 	<!-- cross(fgc, window.X, cvs.height - (window.Y + diffy)); -->
 	<!-- arc(fgc, cX, cY, cv(50), 0, Math.PI * 2); -->
 	
@@ -475,7 +540,8 @@ function render(cvs, winW, winH, elem = true) {
 	ctx.font = cv(80) + "px Courier New";
 	ctx.textBaseline = "bottom";
 	ctx.textAlign = "left";
-	debug("Launch speed: " + formChr(speedx) + ", " + formChr(speedy));
+	debug("Launch speed Y: " + formChr(speedy, PROPS.speeddecimals));
+	debug("Launch speed X: " + formChr(speedx, PROPS.speeddecimals));
 	debug("Autojump: " + autojump.toString());
 	
 	ctx.textAlign = "right";
@@ -483,9 +549,9 @@ function render(cvs, winW, winH, elem = true) {
 	debug = (str) => {
 		txt(fgc, str, cv(300), w - txtPad, txtPad + (offD++) * txtLine);
 	}
-	debug("Angle: " + formChr(deg(angC)) + " deg");
-	debug("Dot prod: " + formChr(-sinC));
-	debug("Superlaunch: " + holding.toString());
+	debug("Angle: " + formChr(deg(angC), PROPS.angledecimals) + " deg");
+	debug("Dot prod: " + formChr(-sinC, PROPS.dotproddecimals, 1));
+	debug("Bumper boost: " + holding.toString());
 	
 	ctx.textAlign = "left";
 	ctx.textBaseline = "top";
@@ -494,14 +560,14 @@ function render(cvs, winW, winH, elem = true) {
 		txt(fgc, str, 300, txtPad, h - (txtPad + (offD++) * txtLine));
 	}
 	debug("Hover outside the circle to get a");
-	debug("superlaunch (1.2x boost)");
+	debug("bumper boost (1.2x horizontal speed)");
 	
 	ctx.textAlign = "right";
 	offD = 0;
 	debug = (str) => {
 		txt(fgc, str, 300, w - txtPad, h - (txtPad + (offD++) * txtLine));
 	}
-	debug("Right-click to trigger the JS debugger");
+	debug("Right-click to fixate the cursor position");
 	debug("Left-click to render a high-quality image");
 	
 	speedy *= -1;
