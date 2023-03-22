@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<meta property="og:title" content="Glitchy Gladeline" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://xminty7.github.io/memes/gladeline.png" />
+<meta property="og:url" content="https://xminty7.github.io/memes/gladeline.html" />
+<meta property="og:description" content="Oops, someone forgot to clear the canvas!" />
+<title>Glitchy Gladeline</title>
+<link rel="icon" href="gladeline.png" />
+<style>
+#cvs {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+}
+
+body, #cvs {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	height: 100vh !important;
+}
+</style>
+</head>
+<body>
+<canvas id="cvs"></canvas>
+
+<script>
+const images = ["gladeline", "wideline1", "wideline2", "wideline3"];
+
+const cvs = document.getElementById("cvs");
+const ctx = cvs.getContext("2d");
+
+window.selected = 0;
+window.x = -1;
+window.y = -1;
+
+<!-- debugger; -->
+cvs.width = document.body.clientWidth;
+cvs.height = document.body.clientHeight;
+
+cvs.addEventListener("click", () => {
+	window.selected = (window.selected + 1) % images.length;
+});
+
+cvs.addEventListener("mousemove", (e) => {
+	window.x = e.pageX;
+	window.y = e.pageY;
+});
+
+<!-- debugger; -->
+
+(async function() {
+
+for (let i = 0; i < images.length; i++) {
+	let imgname = images[i];
+	let img = new Image();
+	let prom = (() => new Promise((res) => {
+		img.onload = () => res();
+	}))();
+	img.src = imgname + ".png";
+	await prom;
+	images[i] = img;
+}
+
+console.log("Loaded!");
+setInterval(draw, 1000/60);
+
+})();
+
+function draw() {
+	if (window.x < 0) return;
+	let img = images[window.selected];
+	ctx.drawImage(img, window.x, window.y);
+}
+</script>
+</body>
+</html>
