@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<meta property="og:title" content="Emote Mayhem" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://xminty7.github.io/memes/emotemayhem/swageline.png" />
+<meta property="og:url" content="https://xminty7.github.io/memes/emotemayhem.html" />
+<meta property="og:description" content="Emotes out of control..." />
+<title>Emote Mayhem</title>
+<link rel="icon" href="emotemayhem/swageline.png" />
+<style>
+#cvs {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+}
+
+body, #cvs {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	height: 100vh !important;
+}
+</style>
+</head>
+<body>
+<canvas id="cvs"></canvas>
+
+<script>
+const images = ["3dpausecorn.png","3dpopcornline.png","angryline.png","animeline.png","arbA.png","arbH.png","arbM.png","baddyqueen.png","bigsadeline.png","bumperbruh.png","Burgy.png","burgyline.png","casheline.png","catblur.png","cateline.png","clowneline.png","cluelessline.png","cowboyeline.png","dabeline.png","derpeline.png","destareline.png","determined.png","facepalmeline.png","falline.png","frogeline.png","gladeline.png","grannycreep.png","grannyrad.png","haha.png","happylandeline.png","hueh.png","hyperfrogeline.png","kevin.png","maddygoodjob.png","MADeline.png","paufr.png","pausefrogelinephone.png","pausephoneline.png","pingeline.png","pissedline.png","pleadeline.png","pogguneline.png","questioneline.png","rad3dpausecorn.png","radeline.png","reaperline.png","sadeline.png","scaredeline.png","snoweline.png","supergladeline.png","surprisedeline.png","swageline.png","theo.png","theonah.png","theoretical.png","theoreticalh.png","theow.png","theoyah.png","thonkeline.png","unstoppable.png","waveline.png","wideline1.png","wideline2.png","wideline3.png","yayeline.png","yeehaweline.png"];
+
+const cvs = document.getElementById("cvs");
+const ctx = cvs.getContext("2d");
+
+window.selected = 0;
+window.x = -1;
+window.y = -1;
+
+<!-- debugger; -->
+cvs.width = document.body.clientWidth;
+cvs.height = document.body.clientHeight;
+
+cvs.addEventListener("click", () => {
+	window.selected = (window.selected + 1) % images.length;
+});
+
+cvs.addEventListener("mousemove", (e) => {
+	window.x = e.pageX;
+	window.y = e.pageY;
+});
+
+<!-- debugger; -->
+
+(async function() {
+
+for (let i = 0; i < images.length; i++) {
+	let imgname = images[i];
+	let img = new Image();
+	let prom = (() => new Promise((res) => {
+		img.onload = () => res();
+	}))();
+	img.src = "emotemayhem/" + imgname;
+	await prom;
+	images[i] = img;
+}
+
+console.log("Loaded!");
+setInterval(draw, 1000/60);
+
+})();
+
+function draw() {
+	<!-- if (window.x < 0) return; -->
+	<!-- let img = images[window.selected]; -->
+	<!-- ctx.drawImage(img, window.x, window.y); -->
+	if (Math.random() < 0.1) {
+		const scale = Math.cbrt(Math.random() * 2);
+		const img = images[Math.floor(Math.random() * images.length)];
+		const ox = Math.floor(Math.random() * cvs.width);
+		const oy = Math.floor(Math.random() * cvs.height);
+		const ow = Math.floor(scale * img.width);
+		const oh = Math.floor(scale * img.height);
+		ctx.drawImage(img, ox, oy, ow, oh);
+	}
+}
+</script>
+</body>
+</html>
