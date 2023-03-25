@@ -38,7 +38,7 @@ However, on some runtimes, calculations are actually performed on 80-bit registe
 The differences lie mostly in two points:
 
 - Some (and not all) versions of the game utilize the x87 processor extension, which allows the usage of 80-bit float registers for more precise calculations. The other versions use SSE2 operations on 32-bit float registers.
-- Among the versions that do use 80-bit registers, each one has its own unique JIT compilation behavior. This, most of the time, creates no issues, but in rare cases, it's possible that two methods with identical MSIL code generate different floating point behavior. This happens because errors in calculations only occur when values are copied through a downcast from 80-bit registers to 32-bit floats in memory, and because of the differences in JIT compilation behavior, this can happen at different times. The size of the resultant error depends a lot on contextual factors such as the magnitude of the numbers, the length of the code, the number of operations done...etc
+- Among the versions that do use 80-bit registers, each one has its own unique JIT compilation behavior. This, most of the time, creates no issues, but in rare cases, it's possible that two methods with identical MSIL code generate different floating point behavior. This happens because errors in calculations only occur when values are copied through a downcast from 80-bit registers to 32-bit floats in memory, and because of the differences in JIT compilation behavior, this can happen at different times. The size of the resultant error depends a lot on contextual factors such as the magnitude of the numbers, the length and layout of the code, the number of operations done...etc
 
 The following table summarizes which versions use 32-bit float registers (safe ✅, compliant with the IEEE754 standard) and which versions use 80-bit float registers (unsafe 💥, non-compliant with the IEEE754 standard)
 
@@ -58,8 +58,8 @@ The code that handles 2D vector addition in both XNA and FNA is small enough to 
 
 *Note: The subpixels value in 80-bits isn't actually exactly zero, but the small deviation from zero is lost to precision when the value is downcast to 32 bits.*
 
-The actual snap position in FNA is highly dependent on the player's exact position value when touching the bubble, and with less importance the direction held on touch.
-This deviation causes some TASes to desynchronize between the XNA and FNA versions of the game. Most of the time, the issue is manageable and the TASer is able to find a set of inputs that produces a desirable snap position.
+The actual snap position in FNA is highly dependent on the player's exact position value when touching the bubble, and on the inputs made when the player is pulled towards the center (these inputs can be changed to obtain different subpixels, which can be seen as a primitive form of subpixel manipulation).
+This deviation causes some TASes to desynchronize between the XNA and FNA versions of the game, and some RTA setups to not be as consistent as on XNA. Most of the time, the issue is manageable and the TASer / speedrunner is able to find a set of inputs that produces a desirable snap position / is consistent, but in some cases this is not the case.
 
 ## Why is all of this relevant?
 There are long term plans (in a few months) to move Everest from running on the same .NET runtime the game provides to shipping with a consistent, more up-to-date .NET Core version. Once that is done, Celeste TASing will be coerced into one consistent bubble snapping behavior across every platform. And so before that happens, it is best to bring up the issue now and discuss which of the two behaviors is ultimately the most desirable: XNA's or FNA's?
