@@ -1,0 +1,587 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<meta property="og:title" content="Bumper Launch Speed Visualizer" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="http://celeste.rf.gd/bumpertool.html" />
+<meta property="og:description" content="An interactive utility that visualizes the launch velocity from a bumper hit" />
+<title>Bumper Launch Speed Visualizer</title>
+<style>
+#display, img {
+	max-width: 100%;
+	max-height: 100%;
+	border: 1px solid black;
+	margin: 1px;
+}
+
+#grid {
+	display: grid;
+	grid-template-columns: 1fr auto;
+}
+
+#left {
+	width: 100%;
+	height: 95vh;
+}
+
+#right {
+	padding-left: 10px;
+	text-align: right;
+}
+
+#labels * {
+	padding: 3px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+</style>
+</head>
+
+<body>
+<div id="grid">
+	<div id="left"><canvas width=4096 height=4096 id="display"></canvas></div>
+	
+	<div id="right">
+		<span id="labels">
+			Decimal point digits for speed:<br>
+			<input type="number" min=3 max=12 step=1 value=3 id="speeddecimals">
+			<br><br>
+			Decimal point digits for dot product:<br>
+			<input type="number" min=3 max=12 step=1 value=3 id="dotproddecimals">
+			<br><br>
+			Decimal point digits for angle:<br>
+			<input type="number" min=3 max=12 step=1 value=3 id="angledecimals">
+			<br><br>
+			Size of high-quality render:<br>
+			<input type="range" min=1000 max=25000 step=100 value="4500" id="rendersize" onchange="rendersizeout.innerText = this.value"><br>
+			<span id="rendersizeout">4500</span>
+			<br><br>
+			<button onclick="apply()">Change settings</button>
+		</span>
+	</div>
+</div>
+
+<script>
+(async function() {
+
+<!-- const DELTA = { float: new Float32Array(3) }; -->
+<!-- DELTA.int = new Int32Array(DELTA.float.buffer); -->
+<!-- DELTA.int[2] = parseInt("00111100100010001000100010011010", 2); -->
+
+<!-- let req = await fetch("props.txt"); -->
+<!-- let data = await req.text(); -->
+<!-- let props = data.split(",").map(Number); -->
+<!-- window.PROPS = { maxTime: (Math.log2(props[0])), maxRTime: props[1], maxFreq: props[2] }; -->
+<!-- window.CACHE = {}; -->
+window.CVS = document.getElementById("display");
+window.rendersize = document.getElementById("rendersize");
+window.rendersizeout = document.getElementById("rendersizeout");
+window.speeddecimals = document.getElementById("speeddecimals");
+window.dotproddecimals = document.getElementById("dotproddecimals");
+window.angledecimals = document.getElementById("angledecimals");
+
+apply();
+
+<!-- let input = document.getElementById("time"); -->
+<!-- input.value = "100"; -->
+<!-- let info = document.getElementById("time-info"); -->
+<!-- let lastNum = undefined, lastDate = undefined; -->
+
+<!-- while (true) { -->
+	<!-- await run(); -->
+	<!-- await slep(1000/60); -->
+<!-- } -->
+
+window.X = undefined;
+window.Y = undefined;
+<!-- const ms = 60; -->
+const fps = 60;
+
+window.DODEBUG = false;
+window.MOVE = true;
+
+<!-- CVS.addEventListener("mousemove", (e) => { -->
+	<!-- if (!window.MOVE) return; -->
+	<!-- window.X = Math.round(e.offsetX); -->
+	<!-- window.Y = Math.round(e.offsetY); -->
+<!-- }); -->
+
+CVS.addEventListener("mousedown", (e) => {
+	e.preventDefault()
+});
+
+CVS.addEventListener("oncontextmenu", (e) => {
+	e.preventDefault()
+});
+
+CVS.addEventListener("mouseup", (e) => {
+	if (e.button == 2) window.MOVE = !window.MOVE;
+	<!-- if (e.button == 2) window.DODEBUG = true; -->
+	if (e.button == 0) renderHigh();
+	e.preventDefault();
+});
+
+CVS.addEventListener("click", (e) => {
+	e.preventDefault();
+});
+
+setInterval(run, 1000/fps);
+
+<!-- await renderHigh(); -->
+
+})();
+
+async function renderHigh() {
+	<!-- let input = document.getElementById("time"); -->
+	<!-- let num = (Number(input.value)/100).toFixed(3); -->
+	<!-- window.DATA = await load(num); -->
+	let cvs = new OffscreenCanvas(PROPS.rendersize, PROPS.rendersize);
+	render(cvs, cvs.width, cvs.height, false);
+	cvs.convertToBlob().then((blob) => {
+		let _url = URL.createObjectURL(blob);
+		window.open(_url, "_blank");
+		<!-- let img = new Image(); -->
+		<!-- img.src = _url; -->
+		<!-- document.getElementById("left").appendChild(img); -->
+	});
+}
+
+function apply() {
+	let defaults = { rendersize: 4500, speeddecimals: 3, dotproddecimals: 3, angledecimals: 3 };
+	let min = { rendersize: 1000, speeddecimals: 3, dotproddecimals: 3, angledecimals: 3 };
+	let max = { rendersize: 25000, speeddecimals: 12, dotproddecimals: 12, angledecimals: 12 };
+	
+	if (window.PROPS == undefined) {
+		if (localStorage.getItem("settings") == null) {
+			window.PROPS = defaults;
+			return;
+		} else {
+			let stored = JSON.parse(localStorage.getItem("settings"));
+			window.PROPS = { rendersize, speeddecimals, dotproddecimals, angledecimals };
+			for (const thing in PROPS) {
+				if (!PROPS.hasOwnProperty(thing)) continue;
+				PROPS[thing].value = stored[thing];
+				PROPS[thing] = stored[thing];
+			}
+		}
+	}
+	
+	window.PROPS = { rendersize, speeddecimals, dotproddecimals, angledecimals };
+	for (const thing in PROPS) {
+		if (!PROPS.hasOwnProperty(thing)) continue;
+		let val = parseInt(PROPS[thing].value);
+		if (!val) val = defaults[thing];
+		if (val < min[thing]) val = min[thing];
+		if (val > max[thing]) val = max[thing];
+		PROPS[thing].value = val;
+		PROPS[thing] = val;
+	}
+	
+	rendersizeout.innerText = PROPS["rendersize"];
+	
+	localStorage.setItem("settings", JSON.stringify(PROPS));
+}
+
+function run() {
+	<!-- window.DATA = await load(a); -->
+	render(window.CVS, window.innerWidth, window.innerHeight);
+	<!-- setTimeout(run, 1000/60); -->
+}
+
+function slep(ms) {
+	return new Promise((res) => setTimeout(res, ms));
+}
+
+function render(cvs, winW, winH, elem = true) {
+	function deg(r) {return deg*180/Math.PI}
+	function rad(d) {return d*Math.PI/180}
+	function deg(r) {return r*180/Math.PI}
+	cos = Math.cos
+	cosr = Math.cos
+	cosd = (x) => Math.cos(deg(x))
+	sin = Math.sin
+	sinr = Math.sin
+	sind = (x) => Math.sin(deg(x))
+	acos = Math.acos
+	acosd = x => deg(acos(x))
+	asind = x => deg(asin(x))
+	asin = Math.asin
+	
+	<!-- const bgc = "white"; -->
+	<!-- const fgc = "black"; -->
+	const bgc = "black";
+	const fgc = "white";
+	
+	let orgW = 4500, orgH = 4500;
+	let conv = 1;
+	
+	if (winW / winH > orgW / orgH)
+		conv = winH / orgH;
+	else
+		conv = winW / orgW;
+	
+	cv = (x) => Math.round(x * conv);
+	
+	let newW = cv(orgW);
+	let newH = cv(orgH);
+	let sizeC = Math.min(newH, newW);
+	
+	if (elem) cvs.width = cvs.height = cvs.style.width = cvs.style.height = sizeC;
+	else cvs.width = cvs.height = sizeC;
+	
+	while (Math.abs(cvs.clientWidth - cvs.width) > 1 || Math.abs(cvs.clientHeight - cvs.height) > 1) {
+		sizeC = Math.min(cvs.clientWidth, cvs.clientHeight);
+		if (elem) cvs.width = cvs.height = cvs.style.width = cvs.style.height = sizeC;
+		else cvs.width = cvs.height = sizeC;
+	}
+	
+	if (window.X == undefined) {
+		window.X = sizeC * Math.random();
+		window.Y = sizeC * Math.random();
+	}
+	
+	const ctx = cvs.getContext("2d");
+
+	const w = cvs.width;
+	const h = cvs.height;
+	
+	const orgX = w / 2;
+	const orgY = h / 2;
+	
+	diffx = diffy = 0;
+	
+	<!-- diffy = mrgny + cv(128); -->
+	<!-- diffx -= mrgnx + cv(128); -->
+	
+	const line = (color, x1, y1, x2, y2) => {
+		ctx.beginPath();
+		ctx.moveTo(x1, h - y1);
+		ctx.lineTo(x2, h - y2);
+		ctx.strokeStyle = color;
+		ctx.stroke();
+	};
+	const lineH = (color, y, x1 = 0, x2 = w) => {
+		ctx.beginPath();
+		ctx.moveTo(x1, h - y);
+		ctx.lineTo(x2, h - y);
+		ctx.strokeStyle = color;
+		ctx.stroke();
+	};
+	const lineV = (color, x, y1 = 0, y2 = h) => {
+		ctx.beginPath();
+		ctx.moveTo(x, h - y1);
+		ctx.lineTo(x, h - y2);
+		ctx.strokeStyle = color;
+		ctx.stroke();
+	};
+	const txt = (color, txt, size, x, y) => {
+		ctx.fillStyle = color;
+		ctx.fillText(txt, x, h - y);
+	};
+	
+	const cross = (color, x, y, size = 100) => {
+		lineH(color, y, x - cv(size), x + cv(size));
+		lineV(color, x, y - cv(size), y + cv(size));
+	}
+	
+	const TAU = Math.PI * 2;
+	
+	const arc = (color, x, y, len, ang1, ang2, fill = true) => {
+		if (ang1 > TAU || ang2 > TAU) return arc(color, x, y, len, ang1 % TAU, ang2 % TAU, fill);
+		if (ang1 > ang2) return arc(color, x, y, len, ang2, ang1, fill);
+		ctx.beginPath();
+		let cos1 = Math.cos(ang1) * len;
+		let cos2 = Math.cos(ang2) * len;
+		let sin1 = Math.sin(ang1) * len;
+		let sin2 = Math.sin(ang2) * len;
+		ctx.fillStyle = color;
+		ctx.strokeStyle = color;
+		if (fill) ctx.moveTo(x, h - y);
+		ctx.arc(x, h - y, len, -ang1, -ang2, true);
+		if (fill) ctx.fill(); else ctx.stroke();
+	}
+	
+	const arco = (color, x, y, len, ang1, ang2, fill = true) => {
+		if (ang1 > TAU || ang2 > TAU) return arco(color, x, y, len, ang1 % TAU, ang2 % TAU, fill);
+		if (ang1 > ang2) return arco(color, x, y, len, ang2, ang1, fill);
+		let cos1 = Math.cos(ang1) * len;
+		let cos2 = Math.cos(ang2) * len;
+		let sin1 = Math.sin(ang1) * len;
+		let sin2 = Math.sin(ang2) * len;
+		ctx.fillStyle = color;
+		ctx.strokeStyle = color;
+		ctx.beginPath();
+		ctx.moveTo(x + cos1, h - y + sin1);
+		ctx.arc(x, h - y, len, -ang1, -ang2, true);
+		if (fill) ctx.fill(); else ctx.stroke();
+	}
+	
+	let arcm = (color, x, y, len, ang1, ang2, fill = true) => {
+		arc(color, x, y, len, ang1, ang2, fill);
+		arc(color, x, y, len, -ang1 + Math.PI, -ang2 + Math.PI, fill);
+	}
+	
+	let tri = (color, x1, y1, x2, y2, x3, y3) => {
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.moveTo(x1 + diffx, h - y1 + diffy);
+		ctx.lineTo(x2 + diffx, h - y2 + diffy);
+		ctx.lineTo(x3 + diffx, h - y3 + diffy);
+		ctx.lineTo(x1 + diffx, h - y1 + diffy);
+		ctx.fill();
+	}
+	
+	let quad = (color, x1, y1, x2, y2, x3, y3, x4, y4) => {
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.moveTo(x1 + diffx, h - y1 + diffy);
+		ctx.lineTo(x2 + diffx, h - y2 + diffy);
+		ctx.lineTo(x3 + diffx, h - y3 + diffy);
+		ctx.lineTo(x4 + diffx, h - y4 + diffy);
+		ctx.lineTo(x1 + diffx, h - y1 + diffy);
+		ctx.fill();
+	}
+	
+	let otri = (color, x, y, base, high, ang, fill = true) => {
+		if (fill) ctx.fillStyle = color; else ctx.strokeStyle = color;
+		ctx.beginPath();
+		let cosa = cos(ang);
+		let sina = sin(ang);
+		ctx.moveTo(x - cosa * base + diffx, h - (y - sina * base) + diffy);
+		ctx.lineTo(x + cosa * base + diffx, h - (y + sina * base) + diffy);
+		ctx.lineTo(x - sina * high + diffx, h - (y + cosa * high) + diffy);
+		ctx.lineTo(x - cosa * base + diffx, h - (y - sina * base) + diffy);
+		if (fill) ctx.fill(); else ctx.stroke();
+	}
+	
+	let vecang = (color, x, y, len, ang) => {
+		let cosa = cos(ang);
+		let sina = sin(ang);
+		let head = len - cv(80);
+		len = len - cv(40);
+		otri(color, x + cosa * head, y + sina * head, cv(40), cv(80), (ang - Math.PI / 2) % (Math.PI * 2));
+		line(color, x, y, x + cosa * len, y + sina * len);
+	}
+	
+	let getAng = (ox, oy, x, y) => {
+		let dx = (x - ox);
+		let dy = (y - oy);
+		let ang = Math.atan(dy / dx);
+		return dx >= 0 ? ang : (ang + Math.PI);
+	}
+	
+	let vecpnt = (color, x1, y1, x2, y2) => {
+		let dx = (x2 - x1);
+		let dy = (y2 - y1);
+		let len = Math.sqrt(dx ** 2 + dy ** 2);
+		let ang = Math.atan(dy / dx);
+		vecang(color, x1, y1, len, ((dx >= 0) ? ang : (ang + Math.PI)));
+	}
+	
+	let lerp = (t, s, e) => t * (s) + (1 - t) * e;
+	let mapl = (t, si, ei, so, eo) => (ei - t) / (ei - si) * (eo - so) + so;
+	
+	ctx.fillStyle = bgc;
+	ctx.fillRect(0, 0, cvs.width, cvs.height);
+	
+	ctx.lineWidth = cv(10);
+	
+	const xmax = 2.4;
+	<!-- const ymax = 2.4; -->
+	const xmul = w / xmax;
+	<!-- const ymul = h / ymax; -->
+	const ymul = xmul;
+	
+	<!-- if (!elem) debugger; -->
+	let cX = w - mapl(window.X, 0, CVS.width, 0, w);
+	let cY = mapl(window.Y, 0, CVS.height, 0, h);
+	<!-- cross(fgc, window.X, cvs.height - (window.Y + diffy)); -->
+	<!-- arc(fgc, cX, cY, cv(50), 0, Math.PI * 2); -->
+	
+	let colors = ["#ff0000", "#00aeff", "#ff0000"].map(x => [x, x + "7f"]);
+	
+	ctx.lineWidth = cv(30);
+	
+	arcm(colors[0][0], orgX, orgY, xmul, Math.PI / 6, Math.PI / 2, false);
+	arcm(colors[0][1], orgX, orgY, xmul, Math.PI / 6, Math.PI / 2);
+	
+	arcm(colors[1][0], orgX, orgY, xmul, -Math.PI / 6, Math.PI / 6, false);
+	arcm(colors[1][1], orgX, orgY, xmul, -Math.PI / 6, Math.PI / 6);
+	
+	arcm(colors[2][0], orgX, orgY, xmul, -Math.PI/2, -Math.PI / 6, false);
+	arcm(colors[2][1], orgX, orgY, xmul, -Math.PI/2, -Math.PI / 6);
+	
+	ctx.lineWidth = cv(10);
+	
+	lineV(fgc, orgX, 0, h);
+	lineH(fgc, orgY, 0, w);
+	
+	const lbloff1 = cv(25);
+	const lbloff2 = cv(40);
+	const txtoff = cv(200);
+	
+	ctx.direction = "ltr";
+	ctx.font = cv(100).toString() + "px serif";
+	
+	<!-- ctx.textAlign = "center"; -->
+	<!-- ctx.textBaseline = "top"; -->
+	<!-- let xlblmax = Math.ceil(props.maxTime); -->
+	
+	<!-- for (let i = 1; i <= xlblmax; i++) { -->
+		<!-- lineV(fgc, i * xmul, -lbloff, lbloff); -->
+		<!-- txt(fgc, i.toString(), 300, i * xmul, -txtoff); -->
+	<!-- } -->
+	
+	<!-- ctx.textAlign = "right"; -->
+	<!-- ctx.textBaseline = "middle"; -->
+	<!-- let ylblunit = 0.05; -->
+	<!-- let ylblmax = Math.round(1/ylblunit); -->
+	<!-- for (let i = -ylblmax; i <= ylblmax; i += 1) { -->
+		<!-- let lbloff = (i % 2 == 0) ? lbloff2 : lbloff1; -->
+		<!-- lineH(fgc, i * ylblunit * xmul + orgY, -lbloff + orgX, lbloff + orgX); -->
+		<!-- if ((i % 2 == 0)) txt(fgc, (i * ylblunit).toFixed(1), 300, orgX + txtoff, orgY + i * ylblunit * ymul); -->
+	<!-- } -->
+	
+	<!-- ctx.textAlign = "left"; -->
+	<!-- ctx.setLineDash([cv(40), cv(25)]); -->
+	
+	<!-- lineH(colors[0][0], (0.55) * xmul + orgY, cv(100), w - cv(100)); -->
+	<!-- ctx.textAlign = "left"; -->
+	<!-- ctx.textBaseline = "bottom"; -->
+	<!-- txt(colors[0][0], "High hit", cv(1000), orgX + 0.9 * xmul, orgY + 0.55 * xmul + cv(50)); -->
+	<!-- ctx.textAlign = "right"; -->
+	<!-- txt(colors[0][0], "-0.55", cv(1000), orgX - 0.9 * xmul, orgY + 0.55 * xmul + cv(50)); -->
+	
+	<!-- lineH(colors[2][0], (-0.65) * xmul + orgY, cv(100), w - cv(100)); -->
+	<!-- ctx.textAlign = "left"; -->
+	<!-- ctx.textBaseline = "top"; -->
+	<!-- txt(colors[2][0], "Low hit", cv(1000), orgX + 0.9 * xmul, orgY + -0.65 * xmul - cv(50)); -->
+	<!-- ctx.textAlign = "right"; -->
+	<!-- txt(colors[2][0], "+0.65", cv(1000), orgX - 0.9 * xmul, orgY + -0.65 * xmul - cv(50)); -->
+	
+	<!-- ctx.textAlign = "left"; -->
+	<!-- ctx.textBaseline = "top"; -->
+	<!-- txt(colors[1][0], "Horizontal hit", cv(1000), orgX + 1.1 * xmul, orgX + cv(110)); -->
+	
+	<!-- ctx.textAlign = "left"; -->
+	<!-- ctx.textBaseline = "top"; -->
+	<!-- ctx.textAlign = "right"; -->
+	<!-- ctx.textBaseline = "bottom"; -->
+	<!-- ctx.textAlign = "left"; -->
+	
+	<!-- let angC = getAng(orgX, orgY, cX, cY); -->
+	<!-- if (angC > Math.PI) angC -= Math.PI * 2; -->
+	<!-- let cosC = cos(angC); -->
+	<!-- let sinC = sin(angC); -->
+	<!-- let colorC = colors[1][0]; -->
+	<!-- if (sinC < -0.65) { -->
+		<!-- colorC = colors[2][0]; -->
+	<!-- } else if (sinC > 0.55) { -->
+		<!-- colorC = colors[0][0]; -->
+	<!-- } -->
+	
+	<!-- let holding = Math.abs(cX - orgX) / xmul > Math.abs(cosC) || Math.abs(cY - orgY) / xmul > Math.abs(sinC); -->
+	<!-- vecang(colorC, orgX, orgY, xmul, angC); -->
+	<!-- ctx.setLineDash([]); -->
+	
+	<!-- let speedx = cosC, speedy = -sinC, autojump = false; -->
+	<!-- if (window.DODEBUG) { -->
+		<!-- debugger; -->
+		<!-- window.DODEBUG = false; -->
+	<!-- } -->
+	<!-- if (speedy <= 0.65 && speedy >= -0.55) { -->
+		<!-- speedy = 0; -->
+		<!-- speedx = Math.sign(speedx); -->
+	<!-- } -->
+	
+	<!-- speedx = 280 * speedx; -->
+	<!-- speedy = 280 * speedy; -->
+	
+	<!-- if (speedy <= 50) { -->
+		<!-- speedy = Math.min(-150, speedy); -->
+		<!-- autojump = true; -->
+	<!-- } -->
+	<!-- if (speedx != 0 && holding) -->
+		<!-- speedx *= 1.2; -->
+	<!-- speedy *= -1; -->
+	
+	<!-- let _speedx, _speedy, _autojump = false; -->
+	<!-- if (sinC < -0.65) { -->
+		<!-- _speedx = cosC * 280; -->
+		<!-- _speedy = sinC * 280; -->
+	<!-- } else if (sinC > 0.55) { -->
+		<!-- _speedx = cosC * 280; -->
+		<!-- _speedy = sinC * 280; -->
+		<!-- _autojump = true; -->
+	<!-- } else { -->
+		<!-- _speedx = 280 * Math.sign(cosC); -->
+		<!-- _speedy = 150; -->
+		<!-- _autojump = true; -->
+	<!-- } -->
+	
+	<!-- if (holding) _speedx *= 1.2; -->
+	
+	<!-- let formChr = (num, len = 3, pad = 3) => { -->
+		<!-- let sign = Math.sign(num); -->
+		<!-- let abs = num * sign; -->
+		<!-- return ((num > 0) ? "+" : "-") + abs.toFixed(len).padStart(len + pad + 1, "0"); -->
+	<!-- } -->
+	
+	<!-- const txtPad = cv(60); -->
+	<!-- const txtLine = cv(120); -->
+	
+	<!-- let offD = 0; -->
+	<!-- let debug = (str) => { -->
+		<!-- txt(fgc, str, cv(300), txtPad, txtPad + (offD++) * txtLine); -->
+	<!-- } -->
+	<!-- ctx.font = cv(80) + "px Courier New"; -->
+	<!-- ctx.textBaseline = "bottom"; -->
+	<!-- ctx.textAlign = "left"; -->
+	<!-- debug("Launch speed Y: " + formChr(speedy, PROPS.speeddecimals)); -->
+	<!-- debug("Launch speed X: " + formChr(speedx, PROPS.speeddecimals)); -->
+	<!-- debug("Autojump: " + autojump.toString()); -->
+	
+	<!-- ctx.textAlign = "right"; -->
+	<!-- offD = 0; -->
+	<!-- debug = (str) => { -->
+		<!-- txt(fgc, str, cv(300), w - txtPad, txtPad + (offD++) * txtLine); -->
+	<!-- } -->
+	<!-- debug("Angle: " + formChr(deg(angC), PROPS.angledecimals) + " deg"); -->
+	<!-- debug("Dot prod: " + formChr(-sinC, PROPS.dotproddecimals, 1)); -->
+	<!-- debug("Bumper boost: " + holding.toString()); -->
+	
+	<!-- ctx.textAlign = "left"; -->
+	<!-- ctx.textBaseline = "top"; -->
+	<!-- offD = 0; -->
+	<!-- debug = (str) => { -->
+		<!-- txt(fgc, str, 300, txtPad, h - (txtPad + (offD++) * txtLine)); -->
+	<!-- } -->
+	<!-- debug("Hover outside the circle to get a"); -->
+	<!-- debug("bumper boost (1.2x horizontal speed)"); -->
+	
+	<!-- ctx.textAlign = "right"; -->
+	<!-- offD = 0; -->
+	<!-- debug = (str) => { -->
+		<!-- txt(fgc, str, 300, w - txtPad, h - (txtPad + (offD++) * txtLine)); -->
+	<!-- } -->
+	<!-- debug("Right-click to fixate the cursor position"); -->
+	<!-- debug("Left-click to render a high-quality image"); -->
+	
+	<!-- speedy *= -1; -->
+	<!-- speedx *= cv(750) / 280; -->
+	<!-- speedy *= cv(750) / 280; -->
+	
+	<!-- let cirX = orgX + cosC * xmul; -->
+	<!-- let cirY = orgY + sinC * xmul; -->
+	<!-- vecpnt(colorC, cirX, cirY, cirX + speedx, cirY + speedy); -->
+	
+	<!-- cvs.convertToBlob().then((blob) => { -->
+		<!-- console.log("Displaying"); -->
+		<!-- const link = document.getElementById("display"); -->
+		<!-- link.src = URL.createObjectURL(blob); -->
+	<!-- }); -->
+}
+</script>
+</body>
+</html>
