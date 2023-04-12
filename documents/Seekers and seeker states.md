@@ -58,7 +58,7 @@ Note that `GetSpeedMagnitude` operates on the current position of the player, no
 This means that for the states that use `GetSpeedMagnitude` to determine the speed, it is possible to manipulate the seeker into moving faster by maintaining a distance greater than 14 tiles from it.
 
 ## Patrol points
-Some seekers 
+Some seekers have nodes placed in their map data. Those nodes act as patrol points of sorts, randomly chosen ones of which the seeker continuously goes to.
 
 # States
 
@@ -82,4 +82,4 @@ Takeaways:
 
 
 ## `StPatrol`
-`StPatrol` is the state
+`StPatrol` is the state that indicates the seeker is aware of the player's presence but cannot find them. When the seeker is in this state, it tries to randomly patrol around predetermined points called [Patrol Points](Seekers%20and%20seeker%20states#Patrol%20points)
