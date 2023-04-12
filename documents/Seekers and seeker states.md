@@ -82,4 +82,4 @@ Takeaways:
 
 
 ## `StPatrol`
-`StPatrol` is the state that indicates the seeker is aware of the player's presence but cannot find them. When the seeker is in this state, it tries to randomly patrol around predetermined points called [Patrol Points](Seekers%20and%20seeker%20states#Patrol%20points)
+`StPatrol` is the state that indicates the seeker is aware of the player's presence but cannot find them. When the seeker is in this state, it tries to randomly patrol around predetermined points called [Patrol Points](Seekers%20and%20seeker%20states.md#Patrol%20points)
