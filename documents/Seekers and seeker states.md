@@ -57,7 +57,7 @@ When `lastSpottedAt` changes, the seeker runs the pathfinding algorithm to attem
 Note that `GetSpeedMagnitude` operates on the current position of the player, not on `lastSpottedAt` or `FollowTarget`.
 This means that for the states that use `GetSpeedMagnitude` to determine the speed, it is possible to manipulate the seeker into moving faster by maintaining a distance greater than 14 tiles from it.
 
-## Patrol points
+## Patrol Points
 Some seekers have nodes placed in their map data. Those nodes act as patrol points of sorts, randomly chosen ones of which the seeker continuously goes to.
 
 # States
@@ -82,4 +82,4 @@ Takeaways:
 
 
 ## `StPatrol`
-`StPatrol` is the state that indicates the seeker is aware of the player's presence but cannot find them. When the seeker is in this state, it tries to randomly patrol around predetermined points called [Patrol Points](Seekers%20and%20seeker%20states.md#Patrol%20points)
+`StPatrol` is the state that indicates the seeker is aware of the player's presence but cannot find them. When the seeker is in this state, it tries to randomly patrol around predetermined points called [Patrol Points](#patrol-points)
