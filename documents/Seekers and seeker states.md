@@ -26,7 +26,7 @@ Let:
 1. The player exists in the level (e.g. not dead)
 2. At least one of three conditions is satisfied:
 	- The state is `StSpotted`
-	- The center of the seeker $c$ is within the rectangle formed by the camer bounds
+	- The center of the seeker $c$ is within the rectangle formed by the camera bounds
 	- The distance from the seeker to the player satisfies $||u||<=20$ tiles 
 3. Both segments of sight $s_1, s_2$ don't intersect any solids
 4. The state is not `StRegenerate`
