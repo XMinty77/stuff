@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+
+<meta property="og:title" content="Creature Step" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://xminty7.github.io/memes/creaturef.webp" />
+<meta property="og:description" content="Creature F vibing" />
+<title>CreatueStep</title>
+
+<!-- <meta property="og:url" content="https://xminty7.github.io/memes/creaturestep.html" /> -->
+
+<style>
+body {
+	margin: 0px;
+	background-color: black;
+}
+
+div#start {
+	font-size: 64px;
+	text-align: center;
+	color: white;
+	width: 100%;
+	height: 100vh;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+}
+
+canvas#cvs {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	display: none;
+}
+</style>
+</head>
+
+<body>
+<div id="start" onclick="start()">
+Click to start!<br>
+WARNING: HIGH VOLUME<br>
+Playback may not start immediately (loading)
+</div>
+
+<canvas width=700 height=700 id="cvs"></canvas>
+
+<audio id="music" preload=auto loop=yes>
+<img id="imgry">
+
+<script src="bezier.js"></script>
+
+<script>
+const cvs = document.getElementById("cvs");
+const ctx = cvs.getContext("2d");
+const len = cvs.width * cvs.height;
+let w = cvs.width;
+let h = cvs.height;
+let cx = Math.round(w / 2);
+let cy = Math.round(h / 2);
+const img = document.getElementById("imgry");
+const mus = document.getElementById("music");
+var iw = cvs.width;
+var ih = cvs.height;
+
+const curve = BezierCurve.Create("cubic-bezier(.03,1.8,.3,1.04)");
+
+let loading = true;
+let loadingPromise = Promise.all([
+	new Promise((res) => {
+		mus.addEventListener("canplaythrough", () => res());
+		mus.src = "https://cdn.discordapp.com/attachments/754495709872521287/1098358530987266078/creaturestep.flac";
+	}),
+	new Promise((res) => {
+		img.onload = () => res();
+		img.src = "creaturef.webp";
+	}),
+]).then(() => (loading = false));
+
+const fps = 60;
+const dt = 1000/fps;
+
+const BEAT_ON = 0.15 * 1000;
+const STOP_SCALING = 0.12 * 1000;
+
+let timer = BEAT_ON + 1;
+let rotation = 0;
+
+function updateSize() {
+	if (cvs.width == window.innerWidth && cvs.height == window.innerHeight) return;
+	cvs.width = window.innerWidth;
+	cvs.height = window.innerHeight;
+	w = cvs.width;
+	h = cvs.height;
+	cx = Math.round(w / 2);
+	cy = Math.round(h / 2);
+}
+
+function start() {
+	if (loading) loadingPromise.then(() => start());
+	else {
+		cvs.style.display = "block";
+		updateSize();
+		mus.play();
+		document.getElementById("start").style.display = "none";
+		ctx.save();
+		iw = img.width;
+		ih = img.height;
+		draw();
+		draw();
+		setInterval(draw, dt);
+	}
+}
+
+function randomColorComp() {
+	return Math.round(Math.random() * 255);
+}
+function randomColor() {
+	return "RGB(" + [0,0,0].map(randomColorComp).join(",") + ")";
+}
+
+function draw() {
+	updateSize();
+	timer += dt;
+	
+	if (timer > BEAT_ON) {
+		ctx.restore();
+		timer = 0;
+		ctx.fillStyle = randomColor();
+		ctx.fillRect(0, 0, w, h);
+		rotation = (rotation + Math.sqrt(Math.random() * 4) * Math.PI) % (Math.PI * 2);
+		
+		ctx.save();
+		ctx.translate(cx, cy);
+		ctx.rotate(rotation);
+		return;
+	}
+	
+	let lerp = Math.min(timer, STOP_SCALING) / STOP_SCALING;
+	let scale = curve.anim(lerp);
+	
+	let nw = iw * scale;
+	let nh = ih * scale;
+	ctx.rotate(-rotation);
+	ctx.fillRect(-cx, -cy, w, h);
+	ctx.rotate(rotation);
+	ctx.drawImage(img, 0, 0, iw, ih, -nw / 2, -nh / 2, nw, nh);
+}
+</script>
+</body>
+</html>
