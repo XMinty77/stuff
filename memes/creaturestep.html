@@ -67,6 +67,7 @@ var iw = cvs.width;
 var ih = cvs.height;
 
 let twoseconds = false;
+let updatelock = false;
 
 const curve = BezierCurve.Create("cubic-bezier(.03,1.8,.3,1.04)");
 
@@ -104,6 +105,8 @@ function updateSize() {
 }
 
 function start() {
+	if (updatelock) return;
+	updatelock = true;
 	if (!twoseconds) {
 		setTimeout(start, 2500);
 		return;
