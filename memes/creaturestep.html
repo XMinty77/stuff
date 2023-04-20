@@ -7,7 +7,9 @@
 <meta property="og:type" content="website" />
 <meta property="og:image" content="https://xminty7.github.io/memes/creaturef.webp" />
 <meta property="og:description" content="Creature F vibing" />
-<title>CreatueStep</title>
+<title>Creature Step</title>
+
+<link rel="icon" href="creaturef.webp" />
 
 <!-- <meta property="og:url" content="https://xminty7.github.io/memes/creaturestep.html" /> -->
 
@@ -75,6 +77,7 @@ let loading = true;
 let loadingPromise = Promise.all([
 	new Promise((res) => {
 		mus.addEventListener("canplaythrough", () => res());
+		<!-- res(); -->
 		mus.src = "https://cdn.discordapp.com/attachments/754495709872521287/1098358530987266078/creaturestep.flac";
 	}),
 	new Promise((res) => {
@@ -91,6 +94,16 @@ const STOP_SCALING = 0.12 * 1000;
 
 let timer = BEAT_ON + 1;
 let rotation = 0;
+let targetScale = 0;
+
+let tx, ty;
+
+const MIN_SCALE = 0.6;
+const MAX_SCALE = 2.3;
+const MARGIN_X = 0.15;
+const MARGIN_Y = 0.15;
+const MARGIN_X_ = 1 - MARGIN_X * 2;
+const MARGIN_Y_ = 1 - MARGIN_Y * 2;
 
 setTimeout(() => twoseconds = true, 2500);
 
@@ -106,13 +119,13 @@ function updateSize() {
 
 function start() {
 	if (updatelock) return;
-	updatelock = true;
-	if (!twoseconds) {
-		setTimeout(start, 2500);
-		return;
-	}
+	<!-- if (!twoseconds) { -->
+		<!-- setTimeout(start, 2500); -->
+		<!-- return; -->
+	<!-- } -->
 	if (loading) loadingPromise.then(() => start());
 	else {
+		updatelock = true;
 		cvs.style.display = "block";
 		updateSize();
 		mus.play();
@@ -143,15 +156,18 @@ function draw() {
 		ctx.fillStyle = randomColor();
 		ctx.fillRect(0, 0, w, h);
 		rotation = (rotation + Math.sqrt(Math.random() * 4) * Math.PI) % (Math.PI * 2);
+		targetScale = Math.random() * (MAX_SCALE - MIN_SCALE) + MIN_SCALE;
+		tx = Math.floor(Math.random() * (w * MARGIN_X_) + MARGIN_X * w);
+		ty = Math.floor(Math.random() * (h * MARGIN_Y_) + MARGIN_Y * h);
 		
 		ctx.save();
-		ctx.translate(cx, cy);
+		ctx.translate(tx, ty);
 		ctx.rotate(rotation);
 		return;
 	}
 	
 	let lerp = Math.min(timer, STOP_SCALING) / STOP_SCALING;
-	let scale = curve.anim(lerp);
+	let scale = curve.anim(lerp) * targetScale;
 	
 	let nw = iw * scale;
 	let nh = ih * scale;
