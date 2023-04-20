@@ -41,6 +41,7 @@ canvas#cvs {
 <div id="start" onclick="start()">
 Click to start!<br>
 WARNING: HIGH VOLUME<br>
+WARNING: PHOTOSENSITIVITY/EPILEPSY<br>
 Playback may not start if loading
 Reload the page after the tab spinner stops
 </div>
@@ -65,6 +66,8 @@ const mus = document.getElementById("music");
 var iw = cvs.width;
 var ih = cvs.height;
 
+let twoseconds = false;
+
 const curve = BezierCurve.Create("cubic-bezier(.03,1.8,.3,1.04)");
 
 let loading = true;
@@ -88,6 +91,8 @@ const STOP_SCALING = 0.12 * 1000;
 let timer = BEAT_ON + 1;
 let rotation = 0;
 
+setTimeout(() => twoseconds = true, 2500);
+
 function updateSize() {
 	if (cvs.width == window.innerWidth && cvs.height == window.innerHeight) return;
 	cvs.width = window.innerWidth;
@@ -99,6 +104,10 @@ function updateSize() {
 }
 
 function start() {
+	if (!twoseconds) {
+		setTimeout(start, 2500);
+		return;
+	}
 	if (loading) loadingPromise.then(() => start());
 	else {
 		cvs.style.display = "block";
