@@ -5,7 +5,7 @@
 
 <meta property="og:title" content="BURGY STEP" />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="https://xminty7.github.io/memes/emotemayhem/burgy.png" />
+<meta property="og:image" content="https://xminty7.github.io/memes/emotemayhem/Burgy.png" />
 <meta property="og:description" content="HAPPY BURGDAY LUFFY" />
 <title>HAPPY BURGDAY</title>
 
@@ -42,7 +42,7 @@ canvas#cvs {
 <body>
 <div id="start" onclick="start()">
 Click to start!<br>
-May not start if still loading
+May not start if still loading<br>
 Try reloading the page after the tab spinner stops
 </div>
 
@@ -81,7 +81,7 @@ let loadingPromise = Promise.all([
 	}),
 	new Promise((res) => {
 		img.onload = () => res();
-		img.src = "./../memes/emotemayhem/burgy.png";
+		img.src = "./../memes/emotemayhem/Burgy.png";
 	}),
 ]).then(() => (loading = false));
 
