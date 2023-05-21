@@ -473,6 +473,10 @@ function render(cvs, winW, winH, elem = true) {
 	ctx.textAlign = "left";
 	
 	let angC = getAng(orgX, orgY, cX, cY);
+	
+	if (orgX == cX && orgY == cY) {
+		angC = Math.PI / 2;
+	}
 	if (angC > Math.PI) angC -= Math.PI * 2;
 	let cosC = cos(angC);
 	let sinC = sin(angC);
@@ -488,10 +492,10 @@ function render(cvs, winW, winH, elem = true) {
 	ctx.setLineDash([]);
 	
 	let speedx = cosC, speedy = -sinC, autojump = false;
-	if (window.DODEBUG) {
-		debugger;
-		window.DODEBUG = false;
-	}
+	<!-- if (window.DODEBUG) { -->
+		<!-- debugger; -->
+		<!-- window.DODEBUG = false; -->
+	<!-- } -->
 	if (speedy <= 0.65 && speedy >= -0.55) {
 		speedy = 0;
 		speedx = Math.sign(speedx);
