@@ -1,0 +1,41 @@
+@font-face {
+    font-family: "Renogare";
+    src: url("../fnt/renogare.otf") format("otf"),
+    url("../fnt/renogare.woff") format("woff"),
+    url("../fnt/renogare.woff2") format("woff2");
+}
+
+body {
+    font-family: "Renogare", "sans-serif";
+    background-color: #111111;
+}
+
+.screen-height {
+    height: 100vh;
+}
+
+.screen-width {
+    width: 100%;
+}
+
+.slide-height {
+    height: 85%;
+}
+
+.slide-footer {
+    position: relative;
+    bottom: 5%;
+}
+
+span.glowy-rainbow {
+    width: 100px;
+    height: 100px;
+    animation-name: mymove;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+h1 {
+    line-height: 1.5em;
+}
