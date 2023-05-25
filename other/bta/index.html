@@ -5,24 +5,305 @@
         <title>Better than Average</title>
         
         <!--link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"-->
-        <link rel="stylesheet" href="css/icons.css" >
-        <link rel="stylesheet" href="lib/materialize.css" />
+        <link rel="icon" href="img/favicon.ico" />
+        <link rel="stylesheet" href="css/icons.css" />
+        <link rel="stylesheet" href="lib/fa/css/fontawesome.min.css" />
+        <link rel="stylesheet" href="lib/fa/css/brands.min.css" />
+        <link rel="stylesheet" href="lib/fa/css/solid.min.css" />
+        <link rel="stylesheet" href="css/materialize.css" />
 
         <link rel="stylesheet" href="css/stupidstuff.css" />
         <link rel="stylesheet" href="css/main.css" />
     </head>
 
     <body class="grey-text text-lighten-4">
-        <div class="screen-height center-align">
-            <div class="slide-height valign-wrapper">
-                <h1 class="center-align screen-width">
-                    So...<br>
-                    You think you're <span class="glowy-rainbow">Better than Average</span>?
-                </h1>
+        <div id="navbar">
+            <nav>
+                <div class="nav-wrapper">
+                    <a class="brand-logo">Better than Average</a>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li><a href="#top">Top</a></li>
+                        <li><a href="#intro">Introduction</a></li>
+                        <li><a href="#rules">Rules</a></li>
+                        <li><a href="#past">Past BTAs</a></li>
+                        <li><a href="#hall">Hall of Fame</a></li>
+                        <li><a href="#acc">Accounts</a></li>
+                        <li><a href="#cred">Credits</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+        <div id="root-grid">
+            <div class="center-align" id="top">
+                <div class="slide-body valign-wrapper">
+                    <h1 class="center-align screen-width">
+                        So...<br>
+                        You think you're <span class="glow-rainbow">Better than Average</span>?
+                    </h1>
+                </div>
             </div>
-            <div class="slide-footer">
-                <i class="material-icons large">expand_more</span>
+
+            <div id="intro">
+                <div class="slide-size slide-bg parallax-effect bg-1"></div>
+                <div class="slide-body slide-on-bg">
+                    <h2 class="screen-width left-align">
+                        Introducing <span class="glow-rainbow">Better than Average</span>!
+                    </h2>
+                    <span class="flow-text">
+                        A seasonal Celeste tournament for speedrunners of all skill levels.<br>
+                        This is a placeholder for information on the tournament.<br>
+                        Namely, a short concise introduction.<br>
+                        The event is hosted by AverageImposter, yada yada yada.
+                    </span>
+                </div>
+            </div>
+
+            <div id="rules">
+                <div id="rules-grid" class="slide-body center-align">
+                    <div id="rules-head" class="valign-wrapper center-align">
+                        <div class="center-align screen-width">
+                            <h2 class="glow glow-white" style="margin-top: 0rem;">The Rules</h2>
+                            <span class="flow-text">
+                                The rules are detailed in the respective PDF rulebooks.
+                            </span>
+                        </div>
+                    </div>
+                    <div id="rules-body-1 center-align">
+                        <a href="https://btaverage.info/res/Rulebook.pdf">
+                            <img src="img/menu_journal.png"><br>
+                            <span class="flow-text red-text">Standard Rulebook<br>& Setup Guide</span>
+                        </a>
+                    </div>
+                    <div id="rules-body-2 center-align">
+                        <a href="https://btaverage.info/res/Rulebook_Winter.pdf">
+                            <img src="img/menu_journal_2.png"><br>
+                            <span class="flow-text blue-text">Winter Rulebook<br>(Winter Special)</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="past">
+                <div class="slide-size slide-bg parallax-effect bg-8"></div>
+                <div class="slide-body-full slide-on-bg">
+                    <h2 class="screen-width left-align glow glow-white" style="margin-top: 0rem;">
+                        Past BTAs
+                    </h2>
+                    <p class="flow-text">
+                        Full playlist available on 
+                        <a href="https://www.youtube.com/playlist?list=PLk684Dgky6u58DAmroh96UB8FAlvR0hbb" target="_blank">YouTube</a>.
+                    </p>
+                    <span class="flow-text">
+                        <ul class="collapsible" style="width: 50%">
+                            <li class="">
+                                <div class="collapsible-header">Winter 2022</div>
+                                <div class="collapsible-body">
+                                    Divisions:
+                                    <span class="glow glow-diamond shower" data="winter22_diamond">Diamond</span>,
+                                    <span class="glow glow-ruby shower" data="winter22_ruby">Ruby</span>,
+                                    <span class="glow glow-sapphire shower" data="winter22_sapphire">Sapphire</span>.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header">Autumn 2022</div>
+                                <div class="collapsible-body">
+                                    Divisions:
+                                    <span class="glow glow-lunar shower" data="autumn22_lunar">Lunar</span>,
+                                    <span class="glow glow-cracked shower" data="autumn22_cracked">Cracked</span>,
+                                    <span class="glow glow-yellow shower" data="autumn22_yellow">Yellow</span>,
+                                    <span class="glow glow-red shower" data="autumn22_red">Red</span>,
+                                    <span class="glow glow-blue shower" data="autumn22_blue">Blue</span>.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header">Summer 2022</div>
+                                <div class="collapsible-body">
+                                    Divisions:
+                                    <span class="glow glow-lunar shower" data="summer22_lunar">Lunar</span>,
+                                    <span class="glow glow-cracked shower" data="summer22_cracked">Cracked</span>,
+                                    <span class="glow glow-yellow shower" data="summer22_yellow">Yellow</span>,
+                                    <span class="glow glow-red shower" data="summer22_red">Red</span>,
+                                    <span class="glow glow-blue shower" data="summer22_blue">Blue</span>.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header">Spring 2022</div>
+                                <div class="collapsible-body">
+                                    Divisions:
+                                    <span class="glow glow-cracked shower" data="spring22_cracked">Cracked</span>,
+                                    <span class="glow glow-yellow shower" data="spring22_yellow">Yellow</span>,
+                                    <span class="glow glow-red shower" data="spring22_red">Red</span>,
+                                    <span class="glow glow-blue shower" data="spring22_blue">Blue</span>.
+                                </div>
+                            </li>
+                        </ul>
+                    </span>
+                    <div id="past-show">
+                        <iframe class="screen-height screen-width" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen src=""></iframe>
+                        <div id="past-show-loader" class="hidden valign-wrapper">
+                            <div class="center-align screen-width">
+                                <div class="preloader-wrapper big active">
+                                    <div class="spinner-layer spinner-blue">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                    <div class="spinner-layer spinner-red">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                    <div class="spinner-layer spinner-yellow">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                    <div class="spinner-layer spinner-green">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="hall" class="center-align">
+                <h1 class="glow glow-white">
+                    Hall of Fame
+                </h1>
+                <div>
+                    <ul class="tabs" id="hoftabs">
+                        <li class="tab active"><a href="#hofwinter22">Winter 2022</a></li>
+                        <li class="tab"><a href="#hofautumn22">Autumn 2022</a></li>
+                        <li class="tab"><a href="#hofsummer22">Summer 2022</a></li>
+                        <li class="tab"><a href="#hofspring22">Spring 2022</a></li>
+                        <li class="tab"><a href="#hofdec21">December 2021</a></li>
+                        <li class="tab"><a href="#hofoct21">October 2021</a></li>
+                        <li class="tab"><a href="#hofspec">Special</a></li>
+                    </ul>
+                </div>
+                <br>
+                <span id="hoftext">
+                    <div id="hofwinter22">
+                        not specified on original website ¯\_(ツ)_/¯
+                    </div>
+                    <div id="hofautumn22">
+                        <span class="glow glow-lunar">Tiyo98</span><br>
+                        <span class="glow glow-cracked">Kwan22</span><br>
+                        <span class="glow glow-yellow">Plixona</span><br>
+                        <span class="glow glow-red">PaulvonhooverIII</span><br>
+                        <span class="glow glow-blue">Ad</span><br>
+                    </div>
+                    <div id="hofsummer22">
+                        <span class="glow glow-lunar">Vapo41</span><br>
+                        <span class="glow glow-cracked">Thalant</span><br>
+                        <span class="glow glow-yellow">Plixona</span><br>
+                        <span class="glow glow-red">Sevadra</span><br>
+                        <span class="glow glow-blue">Kerosyin</span><br>
+                    </div>
+                    <div id="hofspring22">
+                        <span class="glow glow-cracked">Tiyo98</span><br>
+                        <span class="glow glow-yellow">Goosetav</span><br>
+                        <span class="glow glow-red">Plixona</span><br>
+                        <span class="glow glow-blue">DearThrowaway</span><br>
+                    </div>
+                    <div id="hofdec21">
+                        <span class="glow glow-cracked">Tiyo98</span><br>
+                        <span class="glow glow-yellow">crab</span><br>
+                        <span class="glow glow-red">Thalant</span><br>
+                        <span class="glow glow-blue">Kerosyin</span><br>
+                    </div>
+                    <div id="hofoct21">
+                        <span class="glow glow-yellow">RakiTTV</span><br>
+                        <span class="glow glow-red">crab</span><br>
+                        <span class="glow glow-blue">Thalant</span><br>
+                    </div>
+                    <div id="hofspec">
+                        <span class="glow glow-rainbow">blockofbudder</span><br>
+                    </div>
+                </span>
+            </div>
+
+            <div id="acc">
+                <div class="slide-size slide-bg parallax-effect bg-4"></div>
+                <div class="slide-body slide-on-bg center-align valign-wrapper">
+                    <div class="screen-width">
+                        <h2 class="screen-width center-align glow glow-white">
+                            Accounts
+                        </h2>
+                        <span class="accounts-stuff">
+                            <h3>
+                                <a href="mailto:contact@btaverage.info" target="_blank">
+                                    <i class="fa-solid fa-envelope"></i><br>
+                                    Mail
+                                </a>
+                            </h3>
+                            <h3>
+                                <a href="https://discord.gg/6FnHAe7fHs" target="_blank">
+                                    <i class="fa-brands fa-discord"></i><br>
+                                    Discord
+                                </a>
+                            </h3>
+                            <h3>
+                                <a href="https://www.twitch.tv/AverageImposter" target="_blank">
+                                    <i class="fa-brands fa-twitch"></i><br>
+                                    Twitch
+                                </a>
+                            </h3>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cred">
+                <div class="slide-body screen-width center-align valign-wrapper">
+                    <div class="screen-width">
+                        <h2 class="glow glow-white">
+                            Credits
+                        </h2>
+                        <br>
+                        <span class="flow-text">
+                            Credit people here I guess.<br>
+                            Examples:<br>
+                            Hosting: AverageImposter.<br>
+                            Co-commentary: CheesyPi, CactusB<br>(I think? sorry I'm really clueless...)<br>
+                            Art by: <a href="https://www.instagram.com/spirikiri_art/" target="_blank">SpiriKiri_</a>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <script src="lib/jquery-3.7.0.min.js"></script>
+        <script src="lib/materialize.js"></script>
+        <script src="js/main.js"></script>
     </body>
 </html>

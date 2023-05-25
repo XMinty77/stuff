@@ -404,3 +404,51 @@
         text-shadow: 0px 0px 1.2em hsl(360, 100%, 50%);
     }      
 }
+
+.bg-1 {
+    background-image: url("../img/bg1.png");
+}
+
+.bg-2 {
+    background-image: url("../img/bg2.png");
+}
+
+.bg-3 {
+    background-image: url("../img/bg3.png");
+}
+
+.bg-4 {
+    background-image: url("../img/bg4.png");
+}
+
+.bg-5 {
+    background-image: url("../img/bg5.png");
+}
+
+.bg-6 {
+    background-image: url("../img/bg6.png");
+}
+
+.bg-7 {
+    background-image: url("../img/bg7.png");
+}
+
+.bg-8 {
+    background-image: url("../img/bg8.png");
+}
+
+.bg-9 {
+    background-image: url("../img/bg9.png");
+}
+
+.bg-10 {
+    background-image: url("../img/bg10.png");
+}
+
+.bg-11 {
+    background-image: url("../img/bg11.png");
+}
+
+.bg-12 {
+    background-image: url("../img/bg12.png");
+}
