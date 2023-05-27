@@ -167,6 +167,7 @@ span.glow-rainbow {
     grid-auto-columns: 1fr;
     grid-auto-rows: 100%;
     scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    scrollbar-width: thin;
 }
 
 ::-webkit-scrollbar {
