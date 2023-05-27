@@ -92,8 +92,8 @@ span.glow-rainbow {
 
 .slide-bg {
     --blur-size: 15px;
-    filter: blur(var(--blur-size));
-    -webkit-filter: blur(var(--blur-size));
+    /**filter: blur(var(--blur-size));**/
+    /**-webkit-filter: blur(var(--blur-size));**/
     position: relative;
     top: 0px;
     left: 0px;
