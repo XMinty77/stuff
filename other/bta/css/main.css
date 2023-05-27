@@ -31,6 +31,9 @@ body {
 
 body * {
     user-select: none;
+    --scrollbar-track: #212121;
+    --scrollbar-thumb: #616161;
+    --scrollbar-thumb-high: #757575;
 }
 
 h1 {
@@ -163,7 +166,24 @@ span.glow-rainbow {
     display: grid;
     grid-auto-columns: 1fr;
     grid-auto-rows: 100%;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
+
+::-webkit-scrollbar {
+    width: 1em;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-high);
+} 
 
 #rules-grid {
     display: grid;
