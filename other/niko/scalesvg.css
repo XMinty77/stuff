@@ -1,0 +1,94 @@
+/** "Regular" screens **/
+@media (min-aspect-ratio: 1.3) and (max-aspect-ratio: 2.2) {
+    .img {
+        --size: 150%;
+    }
+    #prelogo {
+        --size: 4vw;
+    }
+}
+/** Vertical screens **/
+@media (min-aspect-ratio: 0) and (max-aspect-ratio: 1) {
+    .img {
+        --size: 320%;
+    }
+    #prelogo {
+        --size: 12.8vw;
+    }
+}
+/** Square and 4:3 screens **/
+@media (min-aspect-ratio: 1) and (max-aspect-ratio: 1.3) {
+    .img {
+        --size: 200%;
+    }
+    #prelogo {
+        --size: 8vw;
+    }
+}
+/** Wide screens **/
+@media (min-aspect-ratio: 2.2) {
+    .img {
+        --size: 100%;
+    }
+    #prelogo {
+        --size: 2.5vw;
+    }
+}
+
+@keyframes glow-size {
+    from {
+        text-shadow: 0 0 0.65em var(--glow-color);
+    }
+    50% {
+        text-shadow: 0 0 0.45em var(--glow-color);
+    }
+    to {
+        text-shadow: 0 0 0.65em var(--glow-color);
+    }
+}
+
+.img {
+    position: relative;
+    top: 0px;
+    width: var(--size);
+    left: calc(50% - (var(--size)/2));
+}
+
+body {
+    background: #282828;
+    overflow-x: hidden;
+    margin: 0px;
+    padding: 0px;
+}
+
+#root {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: max-content auto 1fr;
+    height: 100vh;
+}
+
+#prelogo {
+    background: #161616;
+    margin: 0;
+    padding: 1rem;
+    font-size: var(--size);
+    color: whitesmoke;
+    text-align: center;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    animation: glow-size infinite 4s linear;
+    --glow-color: white;
+}
+
+#logo {
+    background: #282828;
+}
+
+#postlogo {
+    background: #282828;
+    color: whitesmoke;
+    text-align: center;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+}
