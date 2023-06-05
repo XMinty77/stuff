@@ -1,5 +1,7 @@
 import * as id3 from "./id3js/id3.js";
 
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
 const model = (() => {
     return {
         getEntries(file, options) {
@@ -44,7 +46,6 @@ const volumeInput = document.getElementById("volume");
 const guessInput = document.getElementById("guess");
 
 fileInput.addEventListener("change", reload);
-rngInput.addEventListener("change", seed);
 volumeInput.addEventListener("change", () => audio.volume = Number(volumeInput.value) / 100);
 guessInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") revealButton.click();
@@ -74,6 +75,10 @@ const playButton = document.getElementById("play");
  * @type {HTMLButtonElement}
  */
 const pauseButton = document.getElementById("pause");
+/**
+ * @type {HTMLButtonElement}
+ */
+const seedButton = document.getElementById("doseed");
 
 startButton.addEventListener("click", randomize);
 revealButton.addEventListener("click", reveal);
@@ -81,6 +86,7 @@ scoreAddButton.addEventListener("click", () => scoreSpan.innerText = (++score).t
 scoreRemButton.addEventListener("click", () => scoreSpan.innerText = (--score).toString());
 playButton.addEventListener("click", () => audio.play());
 pauseButton.addEventListener("click", () => audio.pause());
+seedButton.addEventListener("click", seed);
 
 /**
  * @type {HTMLSpanElement}
@@ -96,7 +102,6 @@ const answerSpan = document.getElementById("answer");
 const scoreSpan = document.getElementById("score");
 
 reload();
-seed();
 
 async function reload() {
     let file = fileInput.files[0];
@@ -116,6 +121,11 @@ async function reload() {
 
 function seed() {
     Math.seedrandom(rngInput.value);
+    let str = "";
+    for (let i = 0; i < 10; i++) {
+        str += alphabet[Math.floor(Math.random() * alphabet.length)];
+    }
+    alert(str);
 }
 
 function randomize() {
