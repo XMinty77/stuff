@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Music Guessing Randomizer</title>
+    </head>
+
+    <body>
+        Upload ZIP of music: <input type="file" id="upload"><br>
+        Set randomization seed: <input type="text" id="rng" value="RNG_SEED"><br><br>
+
+        <button id="randomize">Click to play a random song</button>
+        <button id="reveal">Click to reveal current playing song</button>
+        <br><br>
+
+        Enter guess: <input type="text" id="guess" value="" style="width: 60%;"><br>
+
+        Time spent guessing: <span id="time"></span><br>
+        Correct answer: <span id="answer"></span><br><br>
+
+        Score: <span id="score">0</span> <button id="scoreAdd">+</button><button id="scoreRem">-</button><br><br>
+
+        Volume: <input type="range" id="volume" min="0" max="100" step="0.1"><br>
+        <button id="play">Play</button><button id="pause">Pause</button>
+
+        <audio id="audio" style="display: none;"></audio>
+
+        <script src="zip.js"></script>
+        <script src="rng.js"></script>
+        <script src="index.js" type="module"></script>
+    </body>
+</html>
