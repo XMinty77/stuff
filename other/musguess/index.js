@@ -38,10 +38,17 @@ const rngInput = document.getElementById("rng");
  * @type {HTMLInputElement}
  */
 const volumeInput = document.getElementById("volume");
+/**
+ * @type {HTMLInputElement}
+ */
+const guessInput = document.getElementById("guess");
 
 fileInput.addEventListener("change", reload);
 rngInput.addEventListener("change", seed);
 volumeInput.addEventListener("change", () => audio.volume = Number(volumeInput.value) / 100);
+guessInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") revealButton.click();
+});
 
 /**
  * @type {HTMLButtonElement}
@@ -120,6 +127,7 @@ function randomize() {
     guessIntv = setInterval(updateTime, 50);
     updateTime();
     answerSpan.innerText = "";
+    guessInput.disabled = false;
 }
 
 function updateTime() {
@@ -129,4 +137,5 @@ function updateTime() {
 function reveal() {
     clearInterval(guessIntv);
     answerSpan.innerText = dataID3s[current].title;
+    guessInput.disabled = true;
 }
