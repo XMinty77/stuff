@@ -18,6 +18,8 @@ const model = (() => {
 
 let dataURLs = [];
 let dataID3s = [];
+let sortedDataURLs = [];
+let sortedDataID3s = [];
 let current = 0;
 let score = 0;
 let guessStart = 0;
@@ -47,6 +49,7 @@ const guessInput = document.getElementById("guess");
 
 fileInput.addEventListener("change", reload);
 volumeInput.addEventListener("change", () => audio.volume = Number(volumeInput.value) / 100);
+(() => audio.volume = Number(volumeInput.value) / 100)();
 guessInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") revealButton.click();
 });
@@ -119,18 +122,35 @@ async function reload() {
     score = 0;
 }
 
+function getrng(max) {
+    return Math.floor(Math.random() * max);
+}
+
 function seed() {
     Math.seedrandom(rngInput.value);
     let str = "";
     for (let i = 0; i < 10; i++) {
-        str += alphabet[Math.floor(Math.random() * alphabet.length)];
+        str += alphabet[getrng(alphabet.length)];
     }
+    sortedDataURLs = [];
+    sortedDataID3s = [];
+    let copyDataURLs = structuredClone(dataURLs);
+    let copyDataID3s = structuredClone(dataID3s);
+    for (let i = 0; i < dataURLs.length; i++) {
+        let rem = getrng(copyDataURLs.length);
+        sortedDataURLs.push(copyDataURLs[rem]);
+        sortedDataID3s.push(copyDataID3s[rem]);
+        copyDataURLs.splice(rem, 1);
+        copyDataID3s.splice(rem, 1);
+    }
+
+    window.RNG = sortedDataID3s.map(x => x.title);
     alert(str);
 }
 
 function randomize() {
-    current = Math.floor(Math.random() * dataURLs.length);
-    audio.src = dataURLs[current];
+    current = (current + 1) % sortedDataURLs.length;
+    audio.src = sortedDataURLs[current];
     audio.play();
     guessStart = performance.now();
     clearInterval(guessIntv);
@@ -148,6 +168,6 @@ function updateTime() {
 
 function reveal() {
     clearInterval(guessIntv);
-    answerSpan.innerText = dataID3s[current].title;
+    answerSpan.innerText = sortedDataID3s[current].title;
     guessInput.disabled = true;
 }
