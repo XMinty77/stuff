@@ -138,6 +138,8 @@ function randomize() {
     updateTime();
     answerSpan.innerText = "";
     guessInput.disabled = false;
+    guessInput.value = "";
+    guessInput.focus();
 }
 
 function updateTime() {

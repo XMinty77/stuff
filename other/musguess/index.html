@@ -21,7 +21,17 @@
         Score: <span id="score">0</span> <button id="scoreAdd">+</button><button id="scoreRem">-</button><br><br>
 
         Volume: <input type="range" id="volume" min="0" max="100" step="0.1"><br>
-        <button id="play">Play</button><button id="pause">Pause</button>
+        <button id="play">Play</button><button id="pause">Pause</button><br><br>
+
+        <p>
+            How to plqy:<br>
+            - Upload a ZIP containing ID3-tagged mp3 files to the file input - the website will read them immediately on upload, and the file will be preserved if you reload the page<br>
+            - Set the randomization seed to get the same songs as your opponents, click apply to reset the RNG and set the seed, you will get an alert with a random string of 10 alphanumeric characters generated from the seed to confirm with your opponents<br>
+            - Count down, and click play to have the website choose and play a random song - a guessing timer will begin, try to guess the title of the song and write down your guess in the respective text input - when done, press enter or click the reveal button to finalize your guess<br>
+            - Once the guessing is done, the correct answer is revealed, and the timer is stopped, share a screenshot of your time and guess with your opponents, the most accurate guess in the smallest time period wins the round (priority to guess accuracy)<br>
+            - The winner of each round should manually increase their score using the plus button - the minus button can be used to adjust the score if overshot<br>
+            - The volume, play and pause buttons can be used to control the music player
+        </p>
 
         <audio id="audio" style="display: none;"></audio>
 
