@@ -126,7 +126,7 @@ async function reload() {
     for (const entry of entries) {
         let blob = await model.getBlob(entry);
         dataURLs.push(URL.createObjectURL(blob));
-        dataID3s.push(await id3.fromFile(new File([blob], "music.mp3")));
+        dataID3s.push({ title: entry.filename.substring(37).replace(".mp3", "") });
         statusSpan.innerText = "Loading (" + (++count).toString() + "/" + entries.length + ")";
     }
     window.URLS = dataURLs;
@@ -224,5 +224,5 @@ async function drawImage() {
                 [blob.type]: blob
             })
         ]);
-    } else window.open(URL.createObjectURL(blob), "_blank");
+    }// else window.open(URL.createObjectURL(blob), "_blank");
 }
