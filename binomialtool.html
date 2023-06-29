@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>Minecraft drop probability</title>
+		
+		<style>
+			body span, body button {
+				font-size: 1.1em;
+			}
+			body input {
+				font-size: 0.9em;
+			}
+			
+			#inputs {
+				display: grid;
+				grid-template-columns: auto 1fr;
+				grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+			}
+			
+			#inputs span {
+				padding-right: 50px;
+			}
+		</style>
+	</head>
+	
+	<body>
+		<div id="inputs">
+			<span>Drop chance:</span>
+			<input id="chance" oninput="CHANCE=Number(this.value)/100" value="2.5" title="Average chance of drop per kill (%)">
+			
+			<span>Kills:</span>
+			<input id="kills" oninput="KILLS=Number(this.value)" value="100" title="Number of mob kills">
+			
+			<span>Drops:</span>
+			<input id="drops" oninput="DROPS=Number(this.value)" value="5" title="The drops obtained from mob kills">
+			
+			<span>Success: <input id="successalt"></span>
+			<input id="success" type="range" min="0" max="100" value="90" step="0.00001" oninput="SUCCESS=Number(this.value)/100;SSUCCESSALT((SUCCESS * 100).toFixed(5))" title="The chance of obtaining drops after total kills">
+		</div>
+		
+		<button onclick="calcchance()" title="Calculate the chance of getting exactly the specified drops from the specified kills given the specified drop chance">Calculate strict success</button>
+		<button onclick="calcchanceplus()" title="Calculate the chance of getting the specified drops or more from the specified kills given the specified drop chance">Calculate success</button>
+		<button onclick="calcdrops()" title="Calculate the average drops from the specified kills given the specified drop chance">Calculate drops</button>
+		<button onclick="calckillsavg()" title="Calculate the average kills needed to get the specified drops given the specified drop chance">Calculate average kills</button>
+		<button onclick="calckills()" title="Calculate the kills needed to achieve the specified success rate for getting the specified drops given the specified drop chance">Calculate strict kills</button>
+		<button onclick="calckillsplus()" title="Calculate the kills needed to achieve the specified success rate for getting the specified drops or more given the specified drop chance">Calculate kills</button>
+		<br><br>
+		
+		<span>
+			TIP: Hover over elements to get explanatory tooltips<br>
+			For strict calculations, Infinity may be given as a result when the calculation takes too long or the criteria is impossible.<br>
+			TODO: Implement graphical illustrations for calculations; Display the formulae used in LaTex.
+		</span>
+		
+		<br><br><br>
+		
+		<span id="formula">
+			
+		</span>
+		
+		<script id="MathJax-script" async src="mathjax.js"></script>
+		<script>
+			["chance", "kills", "drops", "successalt", "success"].forEach(x => {
+				let inp = document.getElementById(x);
+				let cap = x.toUpperCase();
+				window[cap] = null;
+				window["I" + cap] = inp;
+				window["S" + cap] = (x) => {
+					inp.value = x;					
+					if (!!inp.oninput) {
+						inp.oninput();
+					}
+				}
+				if (!!inp.oninput) {
+					inp.oninput();
+				}
+			});
+			
+			ISUCCESSALT.oninput = function() {ISUCCESS.value = this.value; SUCCESS=Number(this.value)/100;};
+			
+			function ncr(n, r) {
+				let res = 1;
+				let start, remain;
+				
+				if (r > n/2) {
+					start = r;
+					remain = n-r;
+				} else {
+					start = n-r;
+					remain = r;
+				}
+				
+				for (let p = start + 1; p <= n; p++) {
+					res *= p;
+				}
+				
+				for (let p = 2; p <= remain; p++) {
+					res /= p;
+				}
+				
+				return res;
+			}
+			
+			function bino(n, r, p) {
+				let pf = 1-p;
+				return ncr(n, r) * (p**r) * (pf**(n-r));
+			}
+			
+			function calcchance() {
+				SSUCCESS(bino(KILLS, DROPS, CHANCE)*100);
+			}
+			
+			function calcchanceplus() {
+				SSUCCESS(new Array(KILLS - DROPS + 1).fill(0).map((x, i) => i + DROPS).map(x => bino(KILLS, x, CHANCE) * 100).reduce((x, acc) => acc+=x));
+			}
+			
+			function calcdrops() {
+				SDROPS(KILLS * CHANCE);
+			}
+			
+			function calcchance() {
+				SSUCCESS(bino(KILLS, DROPS, CHANCE)*100);
+			}
+			
+			function calckillsavg() {
+				SKILLS(Math.round(DROPS / CHANCE));
+			}
+			
+			function calckills() {
+				let chance = 0, n;
+				for (n = 1; chance < SUCCESS; n++) {
+					chance = bino(n, DROPS, CHANCE);
+					if (n > 1e7) break;
+				}
+				if (n > 1e7) SKILLS(Number.POSITIVE_INFINITY);
+				else SKILLS(n);
+			}
+			
+			function calckillsplus() {
+				if (SUCCESS == 1) {
+					SKILLS(Number.POSITIVE_INFINITY);
+					return;
+				}
+				let chance = 0, n;
+				for (n = DROPS; chance < SUCCESS; n++) {
+					chance = 0;
+					for (let j = DROPS; j <= n; j++) {
+						chance += bino(n, j, CHANCE);
+					}
+					if (n > 1e6) break;
+				}
+				if (n > 1e6) SKILLS(Number.POSITIVE_INFINITY);
+				else SKILLS(n);
+			}
+		</script>
+	</body>
+</html>
