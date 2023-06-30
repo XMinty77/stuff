@@ -40,7 +40,7 @@
 			<input id="drops" oninput="DROPS=Number(this.value)" value="5" title="The drops obtained from mob kills">
 			
 			<span>Success: <input id="successalt"></span>
-			<input id="success" type="range" min="0" max="100" value="90" step="0.00001" oninput="SUCCESS=Number(this.value)/100;SSUCCESSALT((SUCCESS * 100).toFixed(5))" title="The chance of obtaining drops after total kills">
+			<input id="success" type="range" min="0" max="100" value="90" step="0.0000000001" oninput="SUCCESS=Number(this.value)/100;SSUCCESSALT((SUCCESS * 100).toFixed(10))" title="The chance of obtaining drops after total kills">
 		</div>
 		
 		<button onclick="calcchance()" title="Calculate the chance of getting exactly the specified drops from the specified kills given the specified drop chance">Calculate strict success</button>
@@ -52,8 +52,9 @@
 		<br><br>
 		
 		<span>
-			TIP: Hover over elements to get explanatory tooltips<br>
-			For strict calculations, Infinity may be given as a result when the calculation takes too long or the criteria is impossible.<br>
+			TIP: Hover over elements to get explanatory tooltips.<br>
+			Although not denoted, chances/probability are input and output as percentages (%).<br>
+			For strict calculations, Infinity may be given as a result when the calculation takes too long or the input criteria is impossible.<br>
 			TODO: Implement graphical illustrations for calculations; Display the formulae used in LaTex; Make a calculation wizard with presets.
 		</span>
 		
@@ -65,6 +66,8 @@
 		
 		<script id="MathJax-script" async src="mathjax.js"></script>
 		<script>
+			const bino = binolog;
+		
 			["chance", "kills", "drops", "successalt", "success"].forEach(x => {
 				let inp = document.getElementById(x);
 				let cap = x.toUpperCase();
@@ -83,11 +86,22 @@
 			
 			ISUCCESSALT.oninput = function() {ISUCCESS.value = this.value; SUCCESS=Number(this.value)/100;};
 			
+			const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER);
+			const MAX_SAFE_BIGINT_HALF = BigInt(Number.MAX_SAFE_INTEGER) / 2n;
+			const MAX_SAFE_INTEGER_LOG2 = Math.log2(Number.MAX_SAFE_INTEGER);
+			const CONV_PRECISION_NUMBER = 1e15;
+			const CONV_PRECISION_BIGINT = BigInt(CONV_PRECISION_NUMBER);
+			const CONV_PRECISION_BIGINT_SQ = CONV_PRECISION_BIGINT ** 2n;
+			const FLOAT_BIT_COUNT_NUMBER = 51;
+			const FLOAT_BIT_COUNT_BIGINT = BigInt(FLOAT_BIT_COUNT_NUMBER);
+			
 			function ncr(n, r) {
-				let res = 1;
+				n = BigInt(n);
+				r = BigInt(r);
+				let res = 1n;
 				let start, remain;
 				
-				if (r > n/2) {
+				if (r > n/2n) {
 					start = r;
 					remain = n-r;
 				} else {
@@ -95,20 +109,55 @@
 					remain = r;
 				}
 				
-				for (let p = start + 1; p <= n; p++) {
+				for (let p = start + 1n; p <= n; p++) {
 					res *= p;
 				}
 				
-				for (let p = 2; p <= remain; p++) {
+				for (let p = 2n; p <= remain; p++) {
 					res /= p;
 				}
 				
 				return res;
 			}
 			
-			function bino(n, r, p) {
+			function ncrlog(n, r) {
+				let cr = ncr(n, r);
+				let crn = cr;
+				let i = 0n;
+				while (crn > 1n) {
+					crn >>= 1n;
+					i++;
+				}
+				i++;
+				
+				let shp, p2;
+				if (i <= FLOAT_BIT_COUNT_BIGINT) {
+					shp = 0n;
+					i = Number(i);
+					p2 = i;
+				} else {
+					shp = i - FLOAT_BIT_COUNT_BIGINT;
+					i = Number(i);
+					p2 = FLOAT_BIT_COUNT_NUMBER;
+				}
+				
+				let crp = Number(cr >> shp) / Math.pow(2, p2);
+				return i + Math.log2(crp);
+			}
+			
+			function binonorm(n, r, p) {
 				let pf = 1-p;
-				return ncr(n, r) * (p**r) * (pf**(n-r));
+				let pr = p**r;
+				let pn = pf**(n-r);
+				let cr = ncr(n, r);
+				return Number(cr) * (p**r) * (pf**(n-r));
+			}
+			
+			function binolog(n, r, p) {
+				let pf = Math.log2(1-p);
+				let ps = Math.log2(p);
+				let cr = ncrlog(n, r);
+				return 2 ** (cr + ps*r + pf*(n-r));
 			}
 			
 			function calcchance() {
@@ -121,10 +170,6 @@
 			
 			function calcdrops() {
 				SDROPS(KILLS * CHANCE);
-			}
-			
-			function calcchance() {
-				SSUCCESS(bino(KILLS, DROPS, CHANCE)*100);
 			}
 			
 			function calckillsavg() {
