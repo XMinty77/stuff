@@ -8,50 +8,7 @@
 		<meta property="og:url" content="https://xminty7.github.io/binomialtool.html" />
 		<meta property="og:description" content="A utility that aids with calculating drop chances in games, namely Minecraft" />
 		
-		<style>
-			body {
-				background-color: #121212;
-				color: #f0f0f0;
-			}
-		
-			body span, body button {
-				font-size: 1.1em;
-			}
-			body input {
-				font-size: 0.9em;
-				background-color: #151515;
-				border: 0.1em solid white;
-				color: white;
-			}
-			
-			#inputs {
-				display: grid;
-				grid-template-columns: auto 1fr;
-				grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
-			}
-			
-			#inputs span {
-				padding-right: 50px;
-			}
-			
-			#root {
-				display: grid;
-				grid-template-columns: 1fr;
-				grid-template-rows: auto 1fr;
-			}
-			
-			#bottom {
-				display: grid;
-				grid-template-rows: 1fr;
-				grid-template-columns: 1fr 1fr;
-			}
-			
-			#bottom img {
-				max-width: 100%;
-				max-height: 100%;
-				border: .1em white solid;
-			}
-		</style>
+		<link rel="stylesheet" href="binomialtool.css" />
 	</head>
 	
 	<body>
@@ -77,7 +34,6 @@
 				<button onclick="calcdropsavg()" title="Calculate the average drops from the specified kills given the specified drop chance">Calculate mean drops</button>
 				<button onclick="calckillsavg()" title="Calculate the average kills needed to get the specified drops given the specified drop chance, the same kill count that achieves the highest success rate for getting exactly the specified drops">Calculate average/likeliest kills</button>
 				<button onclick="calckills()" title="Calculate the kills needed to achieve the specified success rate for getting exactly the specified drops given the specified drop chance">Calculate strict kills</button>
-				<!-- <button onclick="calckillslikely()" title="Calculate the kills needed to achieve the highest success rate for getting exactly the specified drops given the specified drop chance">Calculate likeliest kills</button> -->
 				<button onclick="calckillsplus()" title="Calculate the kills needed to achieve the specified success rate for getting the specified drops or more given the specified drop chance">Calculate kills</button>
 				<br><br>
 				
@@ -132,25 +88,9 @@
 			
 			["graph1", "graph2", "formula", "result"].forEach(x => window[x.toUpperCase()] = document.getElementById(x));
 			
-			ISUCCESSALT.oninput = function() {ISUCCESS.value = this.value; SUCCESS=Number(this.value)/100;};
-			
-			WORKER.onmessage = (e) => {
-				switch (e.data.type) {
-					case "calc-killsplus":
-					case "calc-kills":
-						break;
-					case "get-cache":
-						console.log(window.CACHE = e.data);
-						break;
-					case "graph-kills":
-						window.DATAX = e.data;
-						<!-- window.open(URL.createObjectURL(e.data.blob), "_blank"); -->
-						<!-- window.open(URL.createObjectURL(e.data.bloblog), "_blank"); -->
-						GRAPH1.src = URL.createObjectURL(e.data.blob);
-						GRAPH2.src = URL.createObjectURL(e.data.bloblog);
-						bottoon();
-						break;
-				}
+			ISUCCESSALT.oninput = function() {
+				ISUCCESS.value = this.value;
+				SUCCESS=Number(this.value)/100;
 			};
 			
 			function bottoon(state = true) {
@@ -222,10 +162,6 @@
 				};
 				WORKER.postMessage(window.LAST_REQ = { type: "calc-chance-plus", n: KILLS, r: DROPS, p: CHANCE, g: dograph });
 			}
-			
-			<!-- function calcchanceplus() { -->
-				<!-- SSUCCESS(new Array(KILLS - DROPS + 1).fill(0).map((x, i) => i + DROPS).map(x => tools.bino(KILLS, x, CHANCE) * 100).reduce((x, acc) => acc+=x)); -->
-			<!-- } -->
 			
 			function calcdropsavg() {
 				let res = KILLS * CHANCE;
@@ -320,10 +256,6 @@
 					bottoon();
 				};
 				WORKER.postMessage(window.LAST_REQ = { type: "calc-kills", s: SUCCESS, r: DROPS, p: CHANCE, g: dograph, h: true });
-			}
-			
-			function getCache() {
-				WORKER.postMessage({ type: "get-cache" });
 			}
 		</script>
 	</body>

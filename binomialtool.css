@@ -1,0 +1,42 @@
+body {
+	background-color: #121212;
+	color: #f0f0f0;
+}
+
+body span, body button {
+	font-size: 1.1em;
+}
+body input {
+	font-size: 0.9em;
+	background-color: #151515;
+	border: 0.1em solid white;
+	color: white;
+}
+
+#inputs {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+}
+
+#inputs span {
+	padding-right: 50px;
+}
+
+#root {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: auto 1fr;
+}
+
+#bottom {
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr 1fr;
+}
+
+#bottom img {
+	max-width: 100%;
+	max-height: 100%;
+	border: .1em white solid;
+}

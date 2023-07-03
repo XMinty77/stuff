@@ -186,5 +186,5 @@ export function binolessold(n, r, p) {
 }
 
 export function fastlog2(x) {
-	
+	// to be implemented because js doens't have bitwise float ops
 }

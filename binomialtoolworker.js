@@ -1,74 +1,21 @@
 import * as tools from "./binomialtoolshared.js";
 import * as graph from "./binomialtoolgraphs.js";
 
-let chanceCache = new Map();
-let chanceCacheKey = {n: undefined, p: undefined};
-let chancePlusCache = new Map();
-let killsCache = new Map();
-let killsCacheKey = {r: undefined, p: undefined};
-let killsPlusCache = new Map();
-
-const KILLS_CACHE_MAX = 1<<27;
-const KILLS_CACHE_STEP = 1<<10;
-
 onmessage = (e) => {
 	let { n, r, s, p, g, h } = e.data;
 	switch (e.data.type) {
-		// n, p
-		case "cache-chance":
-			cacheChance(n, p);
-			postMessage({ type: "cache-chance", value: true});
-			break;
-		// r, p
-		case "cache-kills":
-			cacheKills(r, p);
-			postMessage({ type: "cache-kills", value: true});
-			break;
-		// s, r, p, g
 		case "calc-kills":
 			calcKills(r, p, s, g, h);
 			break;
-		// s, r, p
 		case "calc-kills-plus":
 			calcKillsPlus(r, p, s, g);
 			break;
-		// n, r, p
 		case "calc-chance":
 			calcChance(n, r, p, g, h);
 			break;
-		// n, r, p
 		case "calc-chance-plus":
 			calcChancePlus(n, r, p, g);
 			break;
-		case "get-cache":
-			postMessage({ type: "get-cache", chanceCache, killsCache, chancePlusCache, killsPlusCache});
-			break;
-	}
-}
-
-function cacheChance(n, p) {
-	if (chanceCacheKey.n === n && chanceCacheKey.p === p) return;
-	chanceCacheKey = { n, p };
-	chanceCache.clear();
-	let total = 0;
-	for (let i = 0; i < n; i++) {
-		let chance = tools.bino(n, i, p);
-		chanceCache.set(i, chance);
-		total += chance;
-		chancePlusCache.set(i, total);
-	}
-}
-
-function cacheKills(r, p) {	
-	if (killsCacheKey.r === r && killsCacheKey.p === p) return;
-	killsCacheKey = { r, p };
-	killsCache.clear();
-	let total = 0;
-	for (let i = KILLS_CACHE_STEP; i <= KILLS_CACHE_MAX; i += KILLS_CACHE_STEP) {
-		let chance = tools.bino(i, r, p);
-		total += chance;
-		killsCache.set(i, chance);
-		killsPlusCache.set(i, total);
 	}
 }
 
