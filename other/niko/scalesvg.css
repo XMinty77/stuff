@@ -77,7 +77,7 @@ body {
     text-align: center;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 600;
-    animation: glow-size infinite 4s linear;
+    /**animation: glow-size infinite 4s linear;**/
     --glow-color: white;
 }
 
