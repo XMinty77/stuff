@@ -9,11 +9,19 @@
 		<meta property="og:description" content="A utility that aids with calculating drop chances in games, namely Minecraft" />
 		
 		<style>
+			body {
+				background-color: #121212;
+				color: #f0f0f0;
+			}
+		
 			body span, body button {
 				font-size: 1.1em;
 			}
 			body input {
 				font-size: 0.9em;
+				background-color: #151515;
+				border: 0.1em solid white;
+				color: white;
 			}
 			
 			#inputs {
@@ -25,49 +33,87 @@
 			#inputs span {
 				padding-right: 50px;
 			}
+			
+			#root {
+				display: grid;
+				grid-template-columns: 1fr;
+				grid-template-rows: auto 1fr;
+			}
+			
+			#bottom {
+				display: grid;
+				grid-template-rows: 1fr;
+				grid-template-columns: 1fr 1fr;
+			}
+			
+			#bottom img {
+				max-width: 100%;
+				max-height: 100%;
+				border: .1em white solid;
+			}
 		</style>
 	</head>
 	
 	<body>
-		<div id="inputs">
-			<span>Drop chance:</span>
-			<input id="chance" oninput="CHANCE=Number(this.value)/100" value="2.5" title="Average chance of drop per kill (%)">
-			
-			<span>Kills:</span>
-			<input id="kills" oninput="KILLS=Number(this.value)" value="100" title="Number of mob kills">
-			
-			<span>Drops:</span>
-			<input id="drops" oninput="DROPS=Number(this.value)" value="5" title="The drops obtained from mob kills">
-			
-			<span>Success: <input id="successalt"></span>
-			<input id="success" type="range" min="0" max="100" value="90" step="0.0000000001" oninput="SUCCESS=Number(this.value)/100;SSUCCESSALT((SUCCESS * 100).toFixed(10))" title="The chance of obtaining drops after total kills">
+		<div id="root">
+			<div id="top">
+				<div id="inputs">
+					<span>Drop chance:</span>
+					<input id="chance" oninput="CHANCE=Number(this.value)/100" value="2.5" title="Average chance of drop per kill (%)">
+					
+					<span>Kills:</span>
+					<input id="kills" oninput="KILLS=Number(this.value)" value="100" title="Number of mob kills">
+					
+					<span>Drops:</span>
+					<input id="drops" oninput="DROPS=Number(this.value)" value="5" title="The drops obtained from mob kills">
+					
+					<span>Success: <input id="successalt"></span>
+					<input id="success" type="range" min="0" max="100" value="90" step="0.0000000001" oninput="SUCCESS=Number(this.value)/100;SSUCCESSALT((SUCCESS * 100).toFixed(10))" title="The chance of obtaining drops after total kills">
+				</div>
+				
+				<button onclick="calcchance()" title="Calculate the chance of getting exactly the specified drops from the specified kills given the specified drop chance">Calculate strict success</button>
+				<button onclick="calcchanceplus()" title="Calculate the chance of getting the specified drops or more from the specified kills given the specified drop chance">Calculate success</button>
+				<button onclick="calcdrops()" title="Calculate the most likely drops from the specified kills given the specified drop chance">Calculate likely drops</button>
+				<button onclick="calcdropsavg()" title="Calculate the average drops from the specified kills given the specified drop chance">Calculate mean drops</button>
+				<button onclick="calckillsavg()" title="Calculate the average kills needed to get the specified drops given the specified drop chance, the same kill count that achieves the highest success rate for getting exactly the specified drops">Calculate average/likeliest kills</button>
+				<button onclick="calckills()" title="Calculate the kills needed to achieve the specified success rate for getting exactly the specified drops given the specified drop chance">Calculate strict kills</button>
+				<!-- <button onclick="calckillslikely()" title="Calculate the kills needed to achieve the highest success rate for getting exactly the specified drops given the specified drop chance">Calculate likeliest kills</button> -->
+				<button onclick="calckillsplus()" title="Calculate the kills needed to achieve the specified success rate for getting the specified drops or more given the specified drop chance">Calculate kills</button>
+				<br><br>
+				
+				<span>
+					TIPs: Hover over elements to get explanatory tooltips. Re-click the same button to cycle through possible solutions if applicable.<br>
+					Although not denoted, chances/probability are input and output as percentages (%).<br>
+					Infinity may be given as a result when the calculation takes too long or the input criteria is impossible.<br>
+					TODO: Display the formulae used in LaTex; Make a calculation wizard with presets.
+				</span>
+				
+				<br><br><br>
+				
+				<span id="result">
+					
+				</span>
+				<br>
+				<span id="formula">
+					
+				</span>
+			</div>
+			<div id="bottom">
+				<img id="graph1">
+				<img id="graph2">
+			</div>
 		</div>
 		
-		<button onclick="calcchance()" title="Calculate the chance of getting exactly the specified drops from the specified kills given the specified drop chance">Calculate strict success</button>
-		<button onclick="calcchanceplus()" title="Calculate the chance of getting the specified drops or more from the specified kills given the specified drop chance">Calculate success</button>
-		<button onclick="calcdrops()" title="Calculate the average drops from the specified kills given the specified drop chance">Calculate drops</button>
-		<button onclick="calckillsavg()" title="Calculate the average kills needed to get the specified drops given the specified drop chance">Calculate average kills</button>
-		<button onclick="calckills()" title="Calculate the kills needed to achieve the specified success rate for getting the specified drops given the specified drop chance">Calculate strict kills</button>
-		<button onclick="calckillsplus()" title="Calculate the kills needed to achieve the specified success rate for getting the specified drops or more given the specified drop chance">Calculate kills</button>
-		<br><br>
-		
-		<span>
-			TIP: Hover over elements to get explanatory tooltips.<br>
-			Although not denoted, chances/probability are input and output as percentages (%).<br>
-			For strict calculations, Infinity may be given as a result when the calculation takes too long or the input criteria is impossible.<br>
-			TODO: Implement graphical illustrations for calculations; Display the formulae used in LaTex; Make a calculation wizard with presets.
-		</span>
-		
-		<br><br><br>
-		
-		<span id="formula">
-			
-		</span>
-		
 		<script id="MathJax-script" async src="mathjax.js"></script>
+		<script type="module">
+			import * as shared from "./binomialtoolshared.js";
+			window.tools = shared;
+		</script>
 		<script>
-			const bino = binolog;
-		
+			window.BTNS = document.querySelectorAll("button");
+			window.LAST_REQ = {};
+			window.LAST_RES = {};
+			window.WORKER = new Worker("./binomialtoolworker.js", { type: "module" });
 			["chance", "kills", "drops", "successalt", "success"].forEach(x => {
 				let inp = document.getElementById(x);
 				let cap = x.toUpperCase();
@@ -84,123 +130,200 @@
 				}
 			});
 			
+			["graph1", "graph2", "formula", "result"].forEach(x => window[x.toUpperCase()] = document.getElementById(x));
+			
 			ISUCCESSALT.oninput = function() {ISUCCESS.value = this.value; SUCCESS=Number(this.value)/100;};
 			
-			const MAX_SAFE_BIGINT = BigInt(Number.MAX_SAFE_INTEGER);
-			const MAX_SAFE_BIGINT_HALF = BigInt(Number.MAX_SAFE_INTEGER) / 2n;
-			const MAX_SAFE_INTEGER_LOG2 = Math.log2(Number.MAX_SAFE_INTEGER);
-			const CONV_PRECISION_NUMBER = 1e15;
-			const CONV_PRECISION_BIGINT = BigInt(CONV_PRECISION_NUMBER);
-			const CONV_PRECISION_BIGINT_SQ = CONV_PRECISION_BIGINT ** 2n;
-			const FLOAT_BIT_COUNT_NUMBER = 51;
-			const FLOAT_BIT_COUNT_BIGINT = BigInt(FLOAT_BIT_COUNT_NUMBER);
+			WORKER.onmessage = (e) => {
+				switch (e.data.type) {
+					case "calc-killsplus":
+					case "calc-kills":
+						break;
+					case "get-cache":
+						console.log(window.CACHE = e.data);
+						break;
+					case "graph-kills":
+						window.DATAX = e.data;
+						<!-- window.open(URL.createObjectURL(e.data.blob), "_blank"); -->
+						<!-- window.open(URL.createObjectURL(e.data.bloblog), "_blank"); -->
+						GRAPH1.src = URL.createObjectURL(e.data.blob);
+						GRAPH2.src = URL.createObjectURL(e.data.bloblog);
+						bottoon();
+						break;
+				}
+			};
 			
-			function ncr(n, r) {
-				n = BigInt(n);
-				r = BigInt(r);
-				let res = 1n;
-				let start, remain;
-				
-				if (r > n/2n) {
-					start = r;
-					remain = n-r;
-				} else {
-					start = n-r;
-					remain = r;
-				}
-				
-				for (let p = start + 1n; p <= n; p++) {
-					res *= p;
-				}
-				
-				for (let p = 2n; p <= remain; p++) {
-					res /= p;
-				}
-				
-				return res;
-			}
-			
-			function ncrlog(n, r) {
-				let cr = ncr(n, r);
-				let crn = cr;
-				let i = 0n;
-				while (crn > 1n) {
-					crn >>= 1n;
-					i++;
-				}
-				i++;
-				
-				let shp, p2;
-				if (i <= FLOAT_BIT_COUNT_BIGINT) {
-					shp = 0n;
-					i = Number(i);
-					p2 = i;
-				} else {
-					shp = i - FLOAT_BIT_COUNT_BIGINT;
-					i = Number(i);
-					p2 = FLOAT_BIT_COUNT_NUMBER;
-				}
-				
-				let crp = Number(cr >> shp) / Math.pow(2, p2);
-				return i + Math.log2(crp);
-			}
-			
-			function binonorm(n, r, p) {
-				let pf = 1-p;
-				let pr = p**r;
-				let pn = pf**(n-r);
-				let cr = ncr(n, r);
-				return Number(cr) * (p**r) * (pf**(n-r));
-			}
-			
-			function binolog(n, r, p) {
-				let pf = Math.log2(1-p);
-				let ps = Math.log2(p);
-				let cr = ncrlog(n, r);
-				return 2 ** (cr + ps*r + pf*(n-r));
+			function bottoon(state = true) {
+				for (const btn of BTNS) btn.disabled = !state;
 			}
 			
 			function calcchance() {
-				SSUCCESS(bino(KILLS, DROPS, CHANCE)*100);
-			}
-			
-			function calcchanceplus() {
-				SSUCCESS(new Array(KILLS - DROPS + 1).fill(0).map((x, i) => i + DROPS).map(x => bino(KILLS, x, CHANCE) * 100).reduce((x, acc) => acc+=x));
+				let samefunc = window.LAST_RES.kind === calcchance;
+				if (samefunc && window.LAST_REQ.r == DROPS && window.LAST_REQ.p == CHANCE && window.LAST_REQ.n == KILLS) {
+					return;
+				}
+				bottoon(false);
+				let dograph = !samefunc || window.LAST_REQ.r != DROPS || window.LAST_REQ.p != CHANCE || window.LAST_REQ.n != KILLS;
+				let res = tools.bino(KILLS, DROPS, CHANCE)*100;
+				WORKER.onmessage = (e) => {
+					e.data.kind = calcchance;
+					window.LAST_RES = e.data;
+					SSUCCESS(res);
+					RESULT.innerText = "Success: " + res;
+					if (dograph) {
+						GRAPH1.src = URL.createObjectURL(e.data.blob);
+						GRAPH2.src = URL.createObjectURL(e.data.bloblog);
+					}
+					bottoon();
+				};
+				WORKER.postMessage(window.LAST_REQ = { type: "calc-chance", n: KILLS, r: DROPS, p: CHANCE, g: dograph });
 			}
 			
 			function calcdrops() {
-				SDROPS(KILLS * CHANCE);
+				let samefunc = window.LAST_RES.kind === calcdrops;
+				if (samefunc && window.LAST_REQ.r == DROPS && window.LAST_REQ.p == CHANCE && window.LAST_REQ.n == KILLS) {
+					return;
+				}
+				bottoon(false);
+				let dograph = !samefunc || window.LAST_REQ.r != DROPS || window.LAST_REQ.p != CHANCE || window.LAST_REQ.n != KILLS;
+				WORKER.onmessage = (e) => {
+					e.data.kind = calcdrops;
+					window.LAST_RES = e.data;
+					SSUCCESS(e.data.maxc*100);
+					SDROPS(e.data.maxr);
+					RESULT.innerText = "Drops: " + e.data.maxr + ". Success: " + e.data.maxc.toFixed(10);;
+					if (dograph) {
+						GRAPH1.src = URL.createObjectURL(e.data.blob);
+						GRAPH2.src = URL.createObjectURL(e.data.bloblog);
+					}
+					bottoon();
+				};
+				WORKER.postMessage(window.LAST_REQ = { type: "calc-chance", n: KILLS, r: DROPS, p: CHANCE, g: dograph, h: false });
+			}
+			
+			function calcchanceplus() {
+				let samefunc = window.LAST_RES.kind === calcchanceplus;
+				if (samefunc && window.LAST_REQ.r == DROPS && window.LAST_REQ.p == CHANCE && window.LAST_REQ.n == KILLS) {
+					return;
+				}
+				bottoon(false);
+				let dograph = !samefunc || window.LAST_REQ.r != DROPS || window.LAST_REQ.p != CHANCE || window.LAST_REQ.n != KILLS;
+				let res = tools.binosum(KILLS, DROPS, KILLS, CHANCE)*100;
+				WORKER.onmessage = (e) => {
+					e.data.kind = calcchanceplus;
+					window.LAST_RES = e.data;
+					SSUCCESS(res);
+					RESULT.innerText = "Success: " + res.toFixed(10);
+					if (dograph) {
+						GRAPH1.src = URL.createObjectURL(e.data.blob);
+						GRAPH2.src = URL.createObjectURL(e.data.bloblog);
+					}
+					bottoon();
+				};
+				WORKER.postMessage(window.LAST_REQ = { type: "calc-chance-plus", n: KILLS, r: DROPS, p: CHANCE, g: dograph });
+			}
+			
+			<!-- function calcchanceplus() { -->
+				<!-- SSUCCESS(new Array(KILLS - DROPS + 1).fill(0).map((x, i) => i + DROPS).map(x => tools.bino(KILLS, x, CHANCE) * 100).reduce((x, acc) => acc+=x)); -->
+			<!-- } -->
+			
+			function calcdropsavg() {
+				let res = KILLS * CHANCE;
+				SDROPS(Math.round(res));
+				RESULT.innerText = "Drops: " + res.toFixed(3);
 			}
 			
 			function calckillsavg() {
-				SKILLS(Math.round(DROPS / CHANCE));
+				let samefunc = window.LAST_RES.kind === calckillsavg;
+				if (samefunc && window.LAST_REQ.r == DROPS && window.LAST_REQ.p == CHANCE) {
+					return;
+				}
+				bottoon(false);
+				let dograph = !samefunc || window.LAST_REQ.r != DROPS || window.LAST_REQ.p != CHANCE;
+				let res = Math.round(DROPS / CHANCE);
+				WORKER.onmessage = (e) => {
+					e.data.kind = calckillsavg;
+					window.LAST_RES = e.data;
+					SKILLS(res);
+					RESULT.innerText = "Kills: " + res;
+					if (dograph) {
+						GRAPH1.src = URL.createObjectURL(e.data.blob);
+						GRAPH2.src = URL.createObjectURL(e.data.bloblog);
+					}
+					bottoon();
+				};
+				WORKER.postMessage(window.LAST_REQ = { type: "calc-kills", s: SUCCESS, r: DROPS, p: CHANCE, g: dograph, h: [ { x: res, y: tools.bino(res, DROPS, CHANCE) } ] });
 			}
 			
 			function calckills() {
-				let chance = 0, n;
-				for (n = 1; chance < SUCCESS; n++) {
-					chance = bino(n, DROPS, CHANCE);
-					if (n > 1e7) break;
+				let samefunc = window.LAST_RES.kind === calckills;
+				if (samefunc && window.LAST_REQ.s == SUCCESS && window.LAST_REQ.r == DROPS && window.LAST_REQ.p == CHANCE) {
+					if (window.LAST_RES.a) SKILLS(window.LAST_RES.closen2);
+					else SKILLS(window.LAST_RES.closen1);
+					window.LAST_RES.a = !window.LAST_RES.a;
+					return;
 				}
-				if (n > 1e7) SKILLS(Number.POSITIVE_INFINITY);
-				else SKILLS(n);
+				bottoon(false);
+				let dograph = !samefunc || window.LAST_REQ.r != DROPS || window.LAST_REQ.p != CHANCE || window.LAST_REQ.s != SUCCESS;
+				WORKER.onmessage = (e) => {
+					e.data.a = true;
+					e.data.kind = calckills;
+					window.LAST_RES = e.data;
+					RESULT.innerText = "Kills: " + e.data.closen1 + " or " + e.data.closen2;
+					SKILLS(e.data.closen1);
+					if (dograph) {
+						GRAPH1.src = URL.createObjectURL(e.data.blob);
+						GRAPH2.src = URL.createObjectURL(e.data.bloblog);
+					}
+					bottoon();
+				};
+				WORKER.postMessage(window.LAST_REQ = { type: "calc-kills", s: SUCCESS, r: DROPS, p: CHANCE, g: dograph, h: false });
 			}
 			
 			function calckillsplus() {
-				if (SUCCESS == 1) {
-					SKILLS(Number.POSITIVE_INFINITY);
+				let samefunc = window.LAST_RES.kind === calckillsplus;
+				if (samefunc && window.LAST_REQ.s == SUCCESS && window.LAST_REQ.r == DROPS && window.LAST_REQ.p == CHANCE) {
 					return;
 				}
-				let chance = 0, n;
-				for (n = DROPS; chance < SUCCESS; n++) {
-					chance = 0;
-					for (let j = DROPS; j <= n; j++) {
-						chance += bino(n, j, CHANCE);
+				bottoon(false);
+				let dograph = !samefunc || window.LAST_REQ.r != DROPS || window.LAST_REQ.p != CHANCE || window.LAST_REQ.s != SUCCESS;
+				WORKER.onmessage = (e) => {
+					e.data.kind = calckillsplus;
+					window.LAST_RES = e.data;
+					RESULT.innerText = "Kills: " + e.data.closen;
+					SKILLS(e.data.closen);
+					if (dograph) {
+						GRAPH1.src = URL.createObjectURL(e.data.blob);
+						GRAPH2.src = URL.createObjectURL(e.data.bloblog);
 					}
-					if (n > 1e6) break;
+					bottoon();
+				};
+				WORKER.postMessage(window.LAST_REQ = { type: "calc-kills-plus", s: SUCCESS, r: DROPS, p: CHANCE, g: dograph });
+			}
+			
+			function calckillslikely() {
+				let samefunc = window.LAST_RES.kind === calckillslikely;
+				if (samefunc && window.LAST_REQ.s == SUCCESS && window.LAST_REQ.r == DROPS && window.LAST_REQ.p == CHANCE) {
+					return;
 				}
-				if (n > 1e6) SKILLS(Number.POSITIVE_INFINITY);
-				else SKILLS(n);
+				bottoon(false);
+				let dograph = !samefunc || window.LAST_REQ.r != DROPS || window.LAST_REQ.p != CHANCE || window.LAST_REQ.s != SUCCESS;
+				WORKER.onmessage = (e) => {
+					e.data.kind = calckillslikely;
+					window.LAST_RES = e.data;
+					RESULT.innerText = "Kills: " + e.data.maxn;
+					SKILLS(e.data.maxn);
+					if (dograph) {
+						GRAPH1.src = URL.createObjectURL(e.data.blob);
+						GRAPH2.src = URL.createObjectURL(e.data.bloblog);
+					}
+					bottoon();
+				};
+				WORKER.postMessage(window.LAST_REQ = { type: "calc-kills", s: SUCCESS, r: DROPS, p: CHANCE, g: dograph, h: true });
+			}
+			
+			function getCache() {
+				WORKER.postMessage({ type: "get-cache" });
 			}
 		</script>
 	</body>
