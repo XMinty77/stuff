@@ -1,0 +1,14 @@
+{
+  "name": "ridgedocs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Minty",
+  "license": "MIT",
+  "dependencies": {
+    "marked": "^5.1.1"
+  }
+}
