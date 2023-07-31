@@ -1,8 +1,10 @@
+let roundTitle;
 let currentRound = 1;
 let currentRoundElement = null;
 
 $(document).ready(() => {
     currentRoundElement = $("#footbar a.active");
+    roundTitle = document.getElementById("title-matchup-round");
 });
 
 $(window).on("load", () => {
@@ -21,4 +23,5 @@ function changeround(elem, newRound) {
 
     currentRound = newRound;
     currentRoundElement = elem;
+    roundTitle.innerText = newRound;
 }
