@@ -272,8 +272,11 @@ span.glow-rainbow {
 
 .matchup div {
     text-align: center;
-    margin-top: 2vh;
-    margin-bottom: 2vh;
+}
+
+.matchup>div {
+    display: flex;
+    justify-content: center;
 }
 
 #rounds>:not(.active) {
@@ -285,8 +288,18 @@ span.glow-rainbow {
     width: 100% !important;
 }
 
+.match-card {
+    width: 70%;
+    border: 3px white solid;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    height: min-content;
+    border-radius: 15%;
+}
+
 img.pfp {
-    width: 15%;
+    /*width: 15%;*/
+    width: 21.5%;
     vertical-align: middle;
     margin-right: 2%;
     border-radius: 50%;
@@ -303,11 +316,16 @@ span.username {
 }
 
 .last img.pfp {
-    width: 7.5%;
+    /*width: 7.5%;*/
+    width: 21.5%;
     vertical-align: middle;
     margin-right: 1%;
     border-radius: 50%;
     border: 2px solid white;
+}
+
+.last .match-card {
+    width: 35%;
 }
 
 #past-show.active {

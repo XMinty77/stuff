@@ -3,11 +3,15 @@ let currentRound = 1;
 let currentRoundElement = null;
 
 $(document).ready(() => {
-    currentRoundElement = $("#footbar a.active");
-    roundTitle = document.getElementById("title-matchup-round");
 });
 
 $(window).on("load", () => {
+    currentRoundElement = $("#footbar a.active");
+    roundTitle = document.getElementById("title-matchup-round");
+
+    $("#m1").addClass("active");
+    let round = Number(location.hash.substring(1)) || 1;
+    changeround($("#footbar").get(0).children[round - 1], round);
     $("#past-show-loader").toggleClass("hidden");
 })
 
