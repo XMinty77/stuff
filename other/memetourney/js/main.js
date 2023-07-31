@@ -1,7 +1,7 @@
 let currentRound = 1;
 let currentRoundElement = null;
 
-$(document).ready(() => {
+$(window).load(() => {
     currentRoundElement = $("#footbar a.active");
     $("#past-show-loader").toggleClass("hidden");
 });
