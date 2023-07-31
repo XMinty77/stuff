@@ -73,6 +73,13 @@ h1 {
     bottom: 5%;
 }
 
+.glow-rgb {
+    animation-name: mymove;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
 span.glow-rainbow {
     width: 100px;
     height: 100px;
@@ -289,17 +296,17 @@ span.glow-rainbow {
 }
 
 .match-card {
-    width: 70%;
+    width: 60%;
     border: 3px white solid;
     padding-top: 2vh;
     padding-bottom: 2vh;
     height: min-content;
-    border-radius: 15%;
+    border-radius: calc(min(6vw, 6vh));
 }
 
 img.pfp {
     /*width: 15%;*/
-    width: 21.5%;
+    width: 18.43%;
     vertical-align: middle;
     margin-right: 2%;
     border-radius: 50%;
@@ -311,13 +318,18 @@ span.username {
     vertical-align: middle;
 }
 
+a.copyuser {
+    color: inherit;
+    cursor: pointer;
+}
+
 .last {
     grid-column: 2/4;
 }
 
 .last img.pfp {
     /*width: 7.5%;*/
-    width: 21.5%;
+    width: 18.43%;
     vertical-align: middle;
     margin-right: 1%;
     border-radius: 50%;
@@ -325,7 +337,7 @@ span.username {
 }
 
 .last .match-card {
-    width: 35%;
+    width: 30%;
 }
 
 #past-show.active {
@@ -352,4 +364,19 @@ span.username {
 
 #hoftext {
     font-size: 2.2em;
+}
+
+#toast {
+    position: fixed;
+    margin-left: -100%;
+    bottom: 6vh;
+    font-size: 2vw;
+    width: max-content;
+    padding: 5%;
+    height: min-content;
+    transition: ease-in-out .3s all;
+}
+
+#toast.active {
+    margin-left: 0%;
 }
