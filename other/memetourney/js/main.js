@@ -1,10 +1,13 @@
 let currentRound = 1;
 let currentRoundElement = null;
 
-$(window).load(() => {
+$(document).ready(() => {
     currentRoundElement = $("#footbar a.active");
-    $("#past-show-loader").toggleClass("hidden");
 });
+
+$(window).on("load", () => {
+    $("#past-show-loader").toggleClass("hidden");
+})
 
 function changeround(elem, newRound) {
     if (currentRound == newRound) return;
