@@ -372,7 +372,7 @@ a.copyuser {
     bottom: 6vh;
     font-size: 2vw;
     width: max-content;
-    padding: 5%;
+    padding: 2%;
     height: min-content;
     transition: ease-in-out .3s all;
 }
