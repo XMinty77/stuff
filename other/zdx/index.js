@@ -26,3 +26,7 @@ addEventListener("click", (e) => {
 addEventListener("keypress", (e) => {
     if (e.key == " ") change(1);
 });
+
+addEventListener("keyup", (e) => {
+    if (e.key == "ArrowLeft") change(-1);
+});
