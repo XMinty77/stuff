@@ -1,7 +1,7 @@
 const MIN_SLIDE = 1;
-const MAX_SLIDE = 8;
+const MAX_SLIDE = 9;
 
-var slide = MIN_SLIDE;
+var slide = 9;
 
 function changeSlide(to) {
     $("#" + slide).toggleClass("active");

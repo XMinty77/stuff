@@ -1,5 +1,8 @@
-#logo-big {
+.logo-big {
     width: 100%;
+}
+.qr-big {
+    height: 100%;
 }
 
 .slide {
@@ -20,6 +23,13 @@
     position: absolute;
     top: 50%;
     transform: translateY(-64%);
+    width: 100%;
+}
+
+.slide-valign-logo {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     width: 100%;
 }
 
