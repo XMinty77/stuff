@@ -1,0 +1,55 @@
+#logo-big {
+    width: 100%;
+}
+
+.slide {
+    width: 100%;
+    height: 100vh;
+
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    color: white;
+}
+
+.slide-valign {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-64%);
+    width: 100%;
+}
+
+.slide.active {
+    opacity: 100%;
+}
+
+.center {
+    text-align: center;
+}
+
+.big-title {
+    font-size: 7vw;
+    font-weight: 600;
+}
+
+.big-text {
+    font-size: 3vw;
+    font-weight: 300;
+}
+
+.bigger-text {
+    font-size: 4.5vw;
+    font-weight: 400;
+}
+
+body {
+    background-color: black;
+    margin: 0;
+    overflow-y: hidden;
+
+    font-family: Poppins;
+}
