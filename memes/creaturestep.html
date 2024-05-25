@@ -78,11 +78,11 @@ let loadingPromise = Promise.all([
 	new Promise((res) => {
 		mus.addEventListener("canplaythrough", () => res());
 		<!-- res(); -->
-		mus.src = "https://cdn.discordapp.com/attachments/754495709872521287/1098358530987266078/creaturestep.flac";
+		mus.src = "./creaturestep.flac";
 	}),
 	new Promise((res) => {
 		img.onload = () => res();
-		img.src = "creaturef.webp";
+		img.src = "./creaturef.webp";
 	}),
 ]).then(() => (loading = false));
 
