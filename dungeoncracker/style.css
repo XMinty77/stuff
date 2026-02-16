@@ -1,0 +1,371 @@
+/* === Reset & Base === */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-primary: #151f29;
+    --bg-secondary: #1e2d3d;
+    --bg-tertiary: #253547;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0aab4;
+    --accent: #4a90d9;
+    --accent-hover: #5ba0e9;
+    --border: #2a3a4a;
+    --success: #4caf50;
+    --error: #f44336;
+    --cell-size: 56px;
+    --cell-gap: 2px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+
+/* === Header === */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+}
+
+.header-icon {
+    width: 36px;
+    height: 36px;
+    image-rendering: pixelated;
+}
+
+.header h1 {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+/* === Main Layout === */
+.main-layout {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* === Floor Panel === */
+.floor-panel {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.floor-header, .floor-footer {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0;
+}
+
+.floor-body {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.direction-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.direction-label.west,
+.direction-label.east {
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+}
+
+.direction-label.west {
+    transform: rotate(180deg);
+}
+
+/* === Floor Grid === */
+.floor-grid {
+    display: grid;
+    grid-template-columns: repeat(9, var(--cell-size));
+    grid-template-rows: repeat(9, var(--cell-size));
+    gap: var(--cell-gap);
+    background: var(--bg-tertiary);
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.floor-cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    cursor: pointer;
+    image-rendering: pixelated;
+    border-radius: 3px;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.floor-cell img {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
+
+.floor-cell:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 8px rgba(74, 144, 217, 0.4);
+    z-index: 1;
+}
+
+.floor-cell.hidden {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* === Floor Controls === */
+.floor-controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.floor-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.legend-item img {
+    width: 20px;
+    height: 20px;
+    image-rendering: pixelated;
+}
+
+/* === Options Panel === */
+.options-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.section {
+    background: var(--bg-secondary);
+    padding: 16px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--accent);
+}
+
+/* === Coordinate Inputs === */
+.coord-row, .option-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.coord-row label, .option-row label {
+    width: 100px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.coord-row input, .option-row select {
+    flex: 1;
+    max-width: 200px;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.coord-row input:focus, .option-row select:focus {
+    border-color: var(--accent);
+}
+
+.option-row select {
+    cursor: pointer;
+}
+
+/* remove spinner on number inputs */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* === Buttons === */
+.btn {
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.btn:hover:not(:disabled) {
+    background: var(--border);
+    border-color: var(--accent);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 32px;
+    width: 100%;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+.btn-primary.running {
+    background: var(--error);
+    border-color: var(--error);
+}
+
+.btn-small {
+    padding: 4px 12px;
+    font-size: 12px;
+}
+
+/* === Status === */
+.status-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    font-family: 'Consolas', 'Courier New', monospace;
+    max-height: 200px;
+    overflow-y: auto;
+    line-height: 1.5;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+/* === Results === */
+.result-group {
+    margin-bottom: 16px;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.result-header h3 {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.seed-list {
+    width: 100%;
+    min-height: 60px;
+    max-height: 150px;
+    padding: 8px 10px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    resize: vertical;
+    outline: none;
+}
+
+.result-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+/* === Responsive === */
+@media (max-width: 960px) {
+    .main-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    :root {
+        --cell-size: 48px;
+    }
+}
+
+@media (max-width: 600px) {
+    :root {
+        --cell-size: 36px;
+    }
+    
+    .floor-legend {
+        font-size: 10px;
+    }
+}
