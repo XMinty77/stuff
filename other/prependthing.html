@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp List</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        button {
+            padding: 0.6rem 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        ul {
+            margin-top: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin: 0.4rem 0;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="addButton">Add Timestamp</button>
+
+    <ul id="list"></ul>
+
+    <script>
+        const button = document.getElementById("addButton");
+        const list = document.getElementById("list");
+
+        button.addEventListener("click", () => {
+            const item = document.createElement("li");
+            item.textContent = new Date().toLocaleString();
+            list.prepend(item);
+        });
+    </script>
+
+</body>
+</html>
